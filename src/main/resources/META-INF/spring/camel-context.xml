@@ -28,7 +28,7 @@
 	<bean id="vehicleGenerator" class="com.redhat.fis.dms.mockprocessor.VehicleGenerator"></bean>
 	
   <camelContext xmlns="http://camel.apache.org/schema/spring">
-  <restConfiguration component="jetty" port="9092" />
+  <restConfiguration component="jetty" host="127.0.0.1" port="9092" />
   <rest path="/AutoDMS">
     <get uri="/availableVehicle/pricerange/{minprice}/{maxprice}">
       <to uri="direct:availableVehicle"/>
