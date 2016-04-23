@@ -4,12 +4,14 @@ This project uses OpenShift FIS (Fuse Integration Services) tools and demonstrat
 For packaging Apache Camel applications within Docker containers and then deploying them onto OpenShift, developers can take two different approaches or paths. 
 
 1.  S2I (Source to Image) workflow : Using this path, a user generates a template object definition (TOD) using the fabric8 Maven plug-in which is included in the OpenShift FIS tools package.  The TOD contains a list of kubernetes objects and also includes info. on the S2I image (builder image) which will be used to build the container image containing the camel application binaries along with the respective run-time (Fuse or Camel).  To learn more about FIS for OpenShift or types of runtimes an Apache Camel application can be deployed to, refer to this [blog] (http://blog.christianposta.com/cloud-native-camel-riding-with-jboss-fuse-and-openshift/) 
-2.  Apache Maven Workflow : Using this path, the developer uses fabric8 Maven plug-in(s) to build the Apache Camel application, generate the docker image containing both the compiled application binary & the run-time, push the docker image to the registry & lastly generate the TOD containing the list of kubernetes objects necessary to deploy the application to OpenShift.  For more detailed info. on this workflow, refer to this GitHub project <https://github.com/RedHatWorkshops/rider-auto-openshift>
+2.  Apache Maven Workflow : Using this path, the developer uses fabric8 Maven plug-in(s) to build the Apache Camel application, generate the docker image containing both the compiled application binary & the run-time, push the docker image to the registry & lastly generate the TOD containing the list of kubernetes objects necessary to deploy the application to OpenShift.  For more detailed info. on this workflow & steps for deploying a sample application using this workflow, please refer to this GitHub project <https://github.com/RedHatWorkshops/rider-auto-openshift>
 
 This microservice exposes a RESTFul API with two *http* end-points.  The microservice is a stripped down version of the original OpenShift FIS example posted 
 by Wei Meilin - [jboss-fis-autodealer](https://github.com/jbossdemocentral/jboss-fis-autodealer)
 
 ## Steps for deploying *ose-fis-auto-dealer* microservice
+The steps listed below for building and deploying this microservice follows approach (1) above, the S2I workflow.
+
 1.  Fork this repository so that it gets added to your GitHub account.
 2.  Download the template file (template object definition) into your master node.
   * Click on *kube-template.json*, then click on *Raw*.  Copy the http URL and use the CURL command to download the template file to your
