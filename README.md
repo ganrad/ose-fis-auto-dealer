@@ -17,7 +17,7 @@ The steps listed below for building and deploying this microservice follows appr
   * Click on *kube-template.json*, then click on *Raw*.  Copy the http URL and use the CURL command to download the template file to your
   OpenShift master node (OR to the server where you have installed OpenShift client tools).
   ```
-  $ https://raw.githubusercontent.com/<your GIT account name>/ose-fis-auto-dealer/master/kube-template.json
+  $ curl https://raw.githubusercontent.com/<your GIT account name>/ose-fis-auto-dealer/master/kube-template.json
   ```
 3.  Login to OpenShift 
 
