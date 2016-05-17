@@ -4,12 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>redhat.com</groupId>
-  <artifactId>inventoryervice</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>inventory-service</artifactId>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Fabric8 :: Quickstarts :: Java :: Camel Spring</name>
-  <description>Camel route using Spring XML in a standalone Java container</description>
+  <name>OpenShift :: Fabric8 :: Java - Camel Spring :: OSE-FIS - </name>
+  <description>Camel route using Spring XML in a standalone Java container. Read XML files from filesystem. Then expose vehicle data in JSON format via REST end-points..</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -102,6 +102,13 @@
       <artifactId>camel-jackson</artifactId>
     </dependency>
    	
+    <!-- Add support for JAXB marshaling -->
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jaxb</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
    	<dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-websocket</artifactId>
@@ -164,13 +171,13 @@
     <defaultGoal>install</defaultGoal>
 
     <plugins>
-      <!-- Compiler plugin enforces Java 1.7 compatibility and activates annotation processors -->
+      <!-- Compiler plugin enforces Java 1.8 compatibility and activates annotation processors -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
@@ -183,6 +190,32 @@
             <exclude>**/*KT.java</exclude>
           </excludes>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.7</version>
+	<executions>
+	    <execution>
+		<id>copy-resources</id>
+		<phase>validate</phase>
+		<goals>
+			<goal>copy-resources</goal>
+		</goals>
+		<configuration>
+		   <outputDirectory>${basedir}/target/classes/com/redhat/fis/dms/model</outputDirectory>
+		   <resources>
+		     <resource>
+		     <directory>${basedir}/src/main/java/com/redhat/fis/dms/model</directory>
+		     <includes>
+			<include>jaxb.index</include>
+		     </includes>
+		     </resource>
+		   </resources>
+	       </configuration>
+	   </execution>
+	</executions>
       </plugin>
 
       <plugin>
@@ -299,6 +332,55 @@
     	</plugins>
     </pluginManagement>
   </build>
+
+	<repositories>
+		<repository>
+			<id>fuse-releases</id>
+			<name>JBoss Fuse Release Repository</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/fs-releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>public jboss</id>
+			<name>JBoss Release Repository</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>fuse-releases</id>
+			<name>JBoss Fuse Release Repository</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/fs-releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+		<pluginRepository>
+			<id>public jboss</id>
+			<name>JBoss Release Repository</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 
   <!--
   Default sample commands:

@@ -1,14 +1,48 @@
 package com.redhat.fis.dms.model;
 
-public class Vehicle {
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {
+	"vehicleId",
+	"make",
+	"model",
+	"type",
+	"year",
+	"price",
+	"inventoryCount"
+})
+@XmlRootElement(name = "vehicle")
+public class Vehicle implements Serializable {
+
+	private static final long serialVersionUID = 6614349012208666446L;
 	
+	@XmlElement(required = true)
 	private String vehicleId;
+
+	@XmlElement(required = true)
 	private String make;
+
+	@XmlElement(required = true)
 	private String model;
+
+	@XmlElement(required = true)
 	private String type;
+
+	@XmlElement(required = true)
 	private String year;
+
+	@XmlElement(required = true)
 	private Integer price;
-	private Integer inventorycount;
+
+	@XmlElement(required = true)
+	private Integer inventoryCount;
 	
 	
 	public String getVehicleId() {
@@ -48,14 +82,20 @@ public class Vehicle {
 	public void setPrice(Integer price) {
 		this.price = price;
 	}
-	public Integer getInventorycount() {
-		return inventorycount;
+	public Integer getInventoryCount() {
+		return inventoryCount;
 	}
-	public void setInventorycount(Integer inventorycount) {
-		this.inventorycount = inventorycount;
+	public void setInventoryCount(Integer inventoryCount) {
+		this.inventoryCount = inventoryCount;
 	}
 	
-	
-	
-
+	@Override
+	public boolean equals(Object v) {
+		Vehicle other = (Vehicle) v;
+		if ( this == other)
+			return true;
+		if ( this.getVehicleId() == other.getVehicleId() )
+			return true;
+		return false;
+	}
 }

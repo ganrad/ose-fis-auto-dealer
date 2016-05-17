@@ -28,6 +28,7 @@
 	<bean id="vehicleGenerator" class="com.redhat.fis.dms.mockprocessor.VehicleGenerator"></bean>
 	
   <camelContext xmlns="http://camel.apache.org/schema/spring">
+
   <restConfiguration component="jetty" host="0.0.0.0" port="9092" />
   <rest path="/AutoDMS">
     <get uri="/availableVehicle/pricerange/{minprice}/{maxprice}">
@@ -38,6 +39,15 @@
     </get>
   </rest>
 
+  <route id="readVehicleFiles">
+    <from uri="file:target/data"/>
+    <log message="Read Vehicle Data File : ${file:absolute.path}\n${body}"/>
+    <unmarshal>
+      <jaxb contextPath="com.redhat.fis.dms.model"/>
+    </unmarshal>
+    <bean ref="vehicleGenerator" method="addVehicle"/>
+  </route>
+
   <route id="availableVehicle">
     <from uri="direct:availableVehicle"/>
     <bean ref="vehicleGenerator" method="avaliablePriceRangeVehicle(${headers.minprice},${headers.maxprice})"/>
@@ -46,6 +56,7 @@
     </marshal>
     <log message="${body}"/>
   </route>
+
   <route id="getVehicle">
     <from uri="direct:getVehicle"/>
     <bean ref="vehicleGenerator" method="getVehicle(${headers.vehicleid})"/>

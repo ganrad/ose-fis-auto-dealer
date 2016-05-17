@@ -10,29 +10,42 @@ public class VehicleGenerator {
 	private List<Vehicle> carpool;
 	
 	public VehicleGenerator(){
-		generateCarpool();
+		// generateCarpool();
+		carpool = new ArrayList<Vehicle>();
 	}
 
-		public List<Vehicle> avaliablePriceRangeVehicle(Integer min, Integer max){
-			List<Vehicle> avaliableVehicles = new ArrayList<Vehicle>();			
-			for( Vehicle car:carpool){
-				if(car.getPrice()>=min && car.getPrice()<=max)
-					avaliableVehicles.add(car);
-			}
-			return avaliableVehicles;
+	public void addVehicle(Vehicle v) {
+		Vehicle vno01= new Vehicle();
+		vno01.setVehicleId(v.getVehicleId());
+		vno01.setMake(v.getMake());
+		vno01.setModel(v.getModel());
+		vno01.setType(v.getType());
+		vno01.setYear(v.getYear());
+		vno01.setPrice(v.getPrice());
+		vno01.setInventoryCount(v.getInventoryCount());
+		carpool.add(vno01); 
+	}
+
+	public List<Vehicle> avaliablePriceRangeVehicle(Integer min, Integer max){
+		List<Vehicle> avaliableVehicles = new ArrayList<Vehicle>();			
+		for( Vehicle car:carpool){
+			if(car.getPrice()>=min && car.getPrice()<=max)
+				avaliableVehicles.add(car);
 		}
+		return avaliableVehicles;
+	}
+	
+	public Vehicle getVehicle(String vehicleId){
 		
-		public Vehicle getVehicle(String vehicleId){
-			
-			for( Vehicle car:carpool){
-				if(car.getVehicleId().equalsIgnoreCase(vehicleId))
-					return car;
-			}
-			return null;
+		for( Vehicle car:carpool){
+			if(car.getVehicleId().equalsIgnoreCase(vehicleId))
+				return car;
 		}
+		return new Vehicle(); // return empty Vehicle
+	}
 		
 		
-		private void generateCarpool(){
+		/* private void generateCarpool(){
 			carpool = new ArrayList<Vehicle>();
 			
 			Vehicle vno01= new Vehicle();
@@ -102,7 +115,7 @@ public class VehicleGenerator {
 			vno07.setType("rear- or front-and-rear-motor, rear- or 4-wheel-drive, 5- or 7-passenger, 4- or 5-door hatchback");
 			vno07.setVehicleId("vno07");
 			vno07.setYear("2016");
-			carpool.add(vno06); 
-		}
+			carpool.add(vno06);
+		} */
 	
 }
