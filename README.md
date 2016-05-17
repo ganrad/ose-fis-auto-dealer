@@ -17,7 +17,7 @@ The auto-dealer microservice is implemented using Apache Camel routes (or integr
 3.  Cache the vehicle java objects in an array list in memory.
 4.  Expose REST (HTTP) end-points to allow users to retrieve (GET) vehicle information in *JSON* format.
 
-Microservices are usually stateless and are perfect candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container will be lost once they terminate or die.
+Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is is deleted/evicted), it's data is no longer available.
 
 In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application and use the *persistent volume claim* feature in OpenShift.  OpenShift comes with a wide variety of persistant storage plug-ins that allow developers to retrieve/store data from multiple persistent storage systems.  The persistent storage plug-ins that ship with OpenShift can be viewed [here](https://docs.openshift.com/enterprise/3.1/install_config/persistent_storage/index.html).
 
