@@ -65,7 +65,7 @@ The steps listed below for building and deploying this microservice follows appr
 8.  At this point, you should have successfully built an Apache Camel based RESTful microservice using OpenShift FIS tooling and deployed
 the same to the OpenShift PaaS!
 9.  Lastly, test the REST end-points using your browser. Substitute the correct values for route name, project name and 
-openshift domain name as they pertain to your OpenShift project.
+openshift domain name as they apply to your OpenShift environment.
   * Test *'getVehicle'* end-point. The result of the REST API call should be JSON data. Vehicle numbers/IDs 
   which you can retrieve are vno01 ... vno05.  Substitute the exact vehicle ID you want to retrieve in the URL (below).
   ```
