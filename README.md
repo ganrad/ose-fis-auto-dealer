@@ -17,7 +17,7 @@ The auto-dealer microservice is implemented using Apache Camel routes (or integr
 3.  Cache the vehicle java objects in an array list in memory.
 4.  Expose REST (HTTP) end-points to allow users to retrieve (GET) vehicle information in *JSON* format.
 
-![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.jpeg)
+![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.png)
 
 Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is is deleted/evicted), it's data is no longer available.
 
