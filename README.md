@@ -1,4 +1,4 @@
-# OpenShift FIS microservice
+# OpenShift FIS microservice : *ose-fis-auto-dealer*
 This project uses OpenShift FIS (Fuse Integration Services) tools and demonstrates how to develop, build and deploy Apache Camel based microservices in OpenShift Enterprise v3.1.
 
 For packaging Apache Camel applications within Docker containers and then deploying them onto OpenShift, developers can take two different approaches or paths. 
@@ -6,8 +6,20 @@ For packaging Apache Camel applications within Docker containers and then deploy
 1.  S2I (Source to Image) workflow : Using this path, a user generates a template object definition (TOD) using the fabric8 Maven plug-in which is included in the OpenShift FIS tools package.  The TOD contains a list of kubernetes objects and also includes info. on the S2I image (builder image) which will be used to build the container image containing the camel application binaries along with the respective run-time (Fuse or Camel).  To learn more about FIS for OpenShift or types of runtimes an Apache Camel application can be deployed to, refer to this [blog] (http://blog.christianposta.com/cloud-native-camel-riding-with-jboss-fuse-and-openshift/) 
 2.  Apache Maven Workflow : Using this path, the developer uses fabric8 Maven plug-in(s) to build the Apache Camel application, generate the docker image containing both the compiled application binary & the run-time, push the docker image to the registry & lastly generate the TOD containing the list of kubernetes objects necessary to deploy the application to OpenShift.  For more detailed info. on this workflow & steps for deploying a sample application using this workflow, please refer to this GitHub project <https://github.com/RedHatWorkshops/rider-auto-openshift>
 
-This microservice exposes a RESTFul API with two *http* end-points.  The microservice is a stripped down version of the original OpenShift FIS example posted 
-by Wei Meilin - [jboss-fis-autodealer](https://github.com/jbossdemocentral/jboss-fis-autodealer)
+## Description/Synopsis
+This microservice exposes a RESTFul API with two *http* end-points.  The microservice has been adapted from it's original version posted 
+by Wei Meilin - [jboss-fis-autodealer](https://github.com/jbossdemocentral/jboss-fis-autodealer).
+
+The auto-dealer microservice is implemented using Apache Camel routes (or integration flows).  At a high level, the Camel routes execute the following sequence of steps :
+
+1.  Read *'xxx.xml'* files from a source directory.
+2.  Un-marshall/De-serialize the XML files into Java objects.
+3.  Cache the vehicle java objects in an array list in memory.
+4.  Expose REST (HTTP) end-points to allow users to retrieve (GET) vehicle information in *JSON* format.
+
+Microservices are usually stateless and are perfect candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container will be lost once they terminate or die.
+
+In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application and use the *persistent volume claim* feature in OpenShift.  OpenShift comes with a wide variety of persistant storage plug-ins that allow developers to retrieve/store data from multiple persistent storage systems.  The persistent storage plug-ins that ship with OpenShift can be viewed [here](https://docs.openshift.com/enterprise/3.1/install_config/persistent_storage/index.html).
 
 ## Steps for deploying *ose-fis-auto-dealer* microservice
 The steps listed below for building and deploying this microservice follows approach (1) above, the S2I workflow.
