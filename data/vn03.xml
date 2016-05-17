@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<vehicle>
+	<vehicleId>003</vehicleId>
+	<make>Toyota</make>
+	<model>Corolla</model>
+	<type>LE</type>
+	<year>2016</year>
+	<price>19399</price>
+	<inventoryCount>6</inventoryCount>
+</vehicle>

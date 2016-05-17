@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<vehicle>
+	<vehicleId>004</vehicleId>
+	<make>Toyota</make>
+	<model>Camry</model>
+	<type>LE</type>
+	<year>2016</year>
+	<price>22099</price>
+	<inventoryCount>8</inventoryCount>
+</vehicle>

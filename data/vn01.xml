@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<vehicle>
+	<vehicleId>001</vehicleId>
+	<make>Honda</make>
+	<model>Civic</model>
+	<type>LX</type>
+	<year>2016</year>
+	<price>18999</price>
+	<inventoryCount>2</inventoryCount>
+</vehicle>
