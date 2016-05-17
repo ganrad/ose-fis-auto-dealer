@@ -1,7 +1,7 @@
 # OpenShift FIS microservice : *ose-fis-auto-dealer*
-This project uses OpenShift FIS (Fuse Integration Services) tools and demonstrates how to develop, build and deploy Apache Camel based microservices in OpenShift Enterprise v3.1.
+This project uses OpenShift FIS (Fuse Integration Services) tools and explains how to develop, build and deploy Apache Camel based microservices in OpenShift Enterprise v3.1.
 
-For packaging Apache Camel applications within Docker containers and then deploying them onto OpenShift, developers can take two different approaches or paths. 
+For building Apache Camel applications within Docker containers and then deploying the resulting container images onto OpenShift, developers can take two different approaches or paths.  The steps outlined here use approach # 1 (see below) in order to build and deploy this microservice application.
 
 1.  S2I (Source to Image) workflow : Using this path, a user generates a template object definition (TOD) using the fabric8 Maven plug-in which is included in the OpenShift FIS tools package.  The TOD contains a list of kubernetes objects and also includes info. on the S2I image (builder image) which will be used to build the container image containing the camel application binaries along with the respective run-time (Fuse or Camel).  To learn more about FIS for OpenShift or types of runtimes an Apache Camel application can be deployed to, refer to this [blog] (http://blog.christianposta.com/cloud-native-camel-riding-with-jboss-fuse-and-openshift/) 
 2.  Apache Maven Workflow : Using this path, the developer uses fabric8 Maven plug-in(s) to build the Apache Camel application, generate the docker image containing both the compiled application binary & the run-time, push the docker image to the registry & lastly generate the TOD containing the list of kubernetes objects necessary to deploy the application to OpenShift.  For more detailed info. on this workflow & steps for deploying a sample application using this workflow, please refer to this GitHub project <https://github.com/RedHatWorkshops/rider-auto-openshift>
@@ -10,18 +10,20 @@ For packaging Apache Camel applications within Docker containers and then deploy
 This microservice exposes a RESTFul API with two *http* end-points.  The microservice has been adapted from it's original version posted 
 by Wei Meilin - [jboss-fis-autodealer](https://github.com/jbossdemocentral/jboss-fis-autodealer).
 
-The auto-dealer microservice is implemented using Apache Camel routes (or integration flows).  At a high level, the Camel routes execute the following sequence of steps (see diagram below) :
+The auto-dealer microservice application is implemented using Apache Camel routes (integration flows).  At a high level, the Camel routes execute the following sequence of steps (see diagram below) :
 
-1.  Read *'xxx.xml'* files from a source directory.
-2.  Un-marshall/De-serialize the XML files into Java objects.
-3.  Cache the vehicle java objects in an array list in memory.
-4.  Expose REST (HTTP) end-points to allow users to retrieve (GET) vehicle information in *JSON* format.
+1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share.
+2.  Un-marshall/De-serialize the XML files into Java objects (POJO's).
+3.  Cache the vehicle POJO's in an array list in memory.
+4.  Expose REST (HTTP) end-points to allow users to retrieve (GET) vehicle information. Serialize the corresponding vehicle POJO's and return data in *JSON* format.
 
 ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.png)
 
-Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is is deleted/evicted), it's data is no longer available.
+Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.
 
-In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will need to mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application. This can be done by defining a *persistent volume claim (PVC)* object in OpenShift and then specifying the PVC information in the *volume mount* section within the Pod manifest.  This would essentially allow the application Pod to retrieve data from the underlying file system directory.  OpenShift comes with a wide variety of persistant storage plug-ins that allow developers to retrieve/store data from multiple persistent storage systems.  The persistent storage plug-ins that ship with OpenShift can be viewed [here](https://docs.openshift.com/enterprise/3.1/install_config/persistent_storage/index.html).
+In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will need to mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application. This can be done by defining a *'Persistent Claim' (PV)* object in OpenShift that points to the exported NFS directory.  Additionally, we will also need to create a *'Persistent Volume Claim' (PVC)* object in OpenShift and then specify the PVC information in the *'volume mount'* section within the Pod manifest.  This would essentially allow the application Pod to retrieve data from the mounted file system directory.
+
+OpenShift comes with a wide variety of persistant storage plug-ins that allow containerized applications to retrieve/store data from multiple persistent storage systems.  The persistent storage plug-ins that ship with OpenShift can be viewed [here](https://docs.openshift.com/enterprise/3.1/install_config/persistent_storage/index.html).
 
 ## Steps for deploying *ose-fis-auto-dealer* microservice
 The steps listed below for building and deploying this microservice follows approach (1) above, the S2I workflow.
