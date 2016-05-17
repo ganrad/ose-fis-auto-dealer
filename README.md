@@ -10,12 +10,13 @@ For packaging Apache Camel applications within Docker containers and then deploy
 This microservice exposes a RESTFul API with two *http* end-points.  The microservice has been adapted from it's original version posted 
 by Wei Meilin - [jboss-fis-autodealer](https://github.com/jbossdemocentral/jboss-fis-autodealer).
 
-The auto-dealer microservice is implemented using Apache Camel routes (or integration flows).  At a high level, the Camel routes execute the following sequence of steps :
+The auto-dealer microservice is implemented using Apache Camel routes (or integration flows).  At a high level, the Camel routes execute the following sequence of steps (see diagram below) :
 
 1.  Read *'xxx.xml'* files from a source directory.
 2.  Un-marshall/De-serialize the XML files into Java objects.
 3.  Cache the vehicle java objects in an array list in memory.
 4.  Expose REST (HTTP) end-points to allow users to retrieve (GET) vehicle information in *JSON* format.
+
 
 Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is is deleted/evicted), it's data is no longer available.
 
