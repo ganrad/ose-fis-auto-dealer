@@ -1,5 +1,5 @@
 # OpenShift FIS microservice : *ose-fis-auto-dealer*
-This project uses OpenShift FIS (Fuse Integration Services) tools and explains how to develop, build and deploy Apache Camel based microservices in OpenShift Enterprise v3.1.
+This project uses OpenShift FIS (Fuse Integration Services) tools and explains how to develop, build and deploy Apache Camel based microservices in OpenShift Enterprise v3.1/v3.2.
 
 For building Apache Camel applications within Docker containers and then deploying the resulting container images onto OpenShift, developers can take two different approaches or paths.  The steps outlined here use approach # 1 (see below) in order to build and deploy this microservice application.
 
@@ -21,7 +21,7 @@ The auto-dealer microservice application is implemented using Apache Camel route
 
 Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.
 
-In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will need to mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application. This can be done by defining a *'Persistent Claim' (PV)* object in OpenShift that points to the exported NFS directory.  Additionally, we will also need to create a *'Persistent Volume Claim' (PVC)* object in OpenShift and then specify the PVC information in the *'volume mount'* section within the Pod manifest.  This would essentially allow the application Pod to retrieve data from the mounted file system directory.
+In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will need to mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application. This can be done by defining a [Persistent Volume (PV)](https://docs.openshift.com/enterprise/3.1/architecture/additional_concepts/storage.html#persistent-volumes) object in OpenShift that points to the exported NFS directory.  Additionally, we will also need to create a [Persistent Volume Claim (PVC)](https://docs.openshift.com/enterprise/3.1/architecture/additional_concepts/storage.html#persistent-volume-claims) object in OpenShift and then specify the PVC information in the *'volume mount'* section within the Pod manifest.  This would essentially allow the application Pod to retrieve data from the mounted file system directory.
 
 OpenShift comes with a wide variety of persistant storage plug-ins that allow containerized applications to retrieve/store data from multiple persistent storage systems.  The persistent storage plug-ins that ship with OpenShift can be viewed [here](https://docs.openshift.com/enterprise/3.1/install_config/persistent_storage/index.html).
 
