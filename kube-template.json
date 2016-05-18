@@ -8,7 +8,7 @@
       "iconClass": "icon-java"
     },
     "labels": {},
-    "name": "carddemo"
+    "name": "fis-auto-template"
   },
   "parameters": [
     {
@@ -336,9 +336,23 @@
                     "value": "${HTTP_PORT}"
                   }
                 ],
-                "resources": {}
+                "resources": {},
+		"securityContext": {
+		  "supplementalGroups": [5555]
+		},
+		"volumeMounts": [ {
+		  "mountPath": "/deployments/target/data",
+		  "name": "ose-fis-auto-volume"
+		}]
               }
-            ]
+            ],
+	    "volumes": [ {
+		"name": "ose-fis-auto-volume",
+		"persistentVolumeClaim": {
+		  "claimName" : "nfs-claim1",
+		  "readOnly": false
+		}
+	    } ]	
           }
         }
       },
