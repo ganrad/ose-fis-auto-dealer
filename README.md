@@ -33,7 +33,7 @@ The steps listed below for building and deploying this microservice follows appr
   * Click on *kube-template.json*, then click on *Raw*.  Copy the http URL and use the CURL command to download the template file to your
   OpenShift master node (OR to the server where you have installed OpenShift client tools).
   ```
-  $ curl https://raw.githubusercontent.com/<your GIT account name>/ose-fis-auto-dealer/master/kube-template.json
+  $ curl https://raw.githubusercontent.com/<your GIT account name>/ose-fis-auto-dealer/master/kube-template.json > kube-template.json
   ```
 3.  Login to OpenShift 
 
@@ -43,7 +43,7 @@ The steps listed below for building and deploying this microservice follows appr
 4.  Create a new project 
 
   ```
-  $ oc new-project fis-auto-dealer
+  $ oc new-project fis-apps
   ```
 5.  Import the template file into your project 
   * Alternatively, you can import the template to the 'openshift' project using '-n openshift' option.  This would give all OpenShift users access to this 
@@ -51,15 +51,67 @@ The steps listed below for building and deploying this microservice follows appr
   ```
   $ oc create -f kube-template.json
   ```
-6.  Create the microservice application
+  * To view all application templates in your current project
+  ```
+  $ oc get templates
+  ```
+6.  On each OpenShift node, enable writing to NFS volumes with SELinux. The -P option ensures the setting is persisted between reboots.
+
+  ```
+  $ setsebool -P virt_use_nfs 1
+  $ setsebool -P virt_sandbox_use_nfs 1
+  ```
+7.  Create a *Persistent Volume* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the configuration directory.
+
+  ```
+  apiVersion: v1
+  kind: PersistentVolume
+  metadata: 
+    name: pv001
+  spec:
+    capacity:
+      storage: 250Mi
+    accessModes:
+    - ReadWriteOnce
+    nfs:
+      path: /opt/nfs
+      server: data-store.example.com
+      persistentVolumeReclaimPolicy: Recycle
+  ```
+  
+  **path** : Directory (full path) exported by the NFS server.  
+  **server** : Hostname (or IP address) of the NFS server.
+
+8.  Create a *Persistent Volume Claim* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pvc.yaml* file from the configuration directory.
+
+   ```
+   apiVersion: v1
+   kind: PersistentVolumeClaim
+   metadata:
+     name: nfs-claim1
+   spec:
+     accessModes:
+     - ReadWriteOnce
+     resources:
+       requests:
+         storage: 225Mi
+   ```
+9.  Check if the PVC has been associated with the PV.
+
+   ```
+   [gradhakr@ose31-master ~]$ oc get pvc
+   NAME         LABELS    STATUS    VOLUME    CAPACITY   ACCESSMODES   AGE
+   nfs-claim1   <none>    Bound     pv001     250Mi      RWO           3h
+   ```
+10.  Create the microservice application
   * This command kicks off the S2I build process in OpenShift.
   * Alternatively, you can use the OpenShift Web UI to create the application.
   * Remember to substitute your GIT account user name in the GIT http url below.
   ```
-  $ oc new-app --template=carddemo --param=GIT_REPO=https://github.com/<your GIT account username>/ose-fis-auto-dealer.git
+  $ oc new-app --template=fis-auto-template --param=GIT_REPO=https://github.com/<your GIT account username>/ose-fis-auto-dealer.git
   ```
-7.  Use the commands below to check the status of the build and deployment 
-  * The build (Maven) might take a while (approx. 5-10 mins) to download all dependencies, build the code and then push the image into
+11.  Use the commands below to check the status of the build and deployment 
+  * The build (Maven) might take a while (approx. 10-20 mins) to download all dependencies, build the code and then push the image into
   the integrated Docker registry.
   * Once the build completes and the image is pushed into the registry, the deployment process would start.
   * Check the builds
@@ -78,14 +130,35 @@ The steps listed below for building and deploying this microservice follows appr
   ```
   $ oc get pods
   ```
-8.  At this point, you should have successfully built an Apache Camel based RESTful microservice using OpenShift FIS tooling and deployed
-the same to the OpenShift PaaS!
-9.  Lastly, test the REST end-points using your browser. Substitute the correct values for route name, project name and 
+  * At this point, you should have successfully built an Apache Camel based RESTful microservice using OpenShift FIS tooling and deployed the same to OpenShift PaaS!
+12.  Open a command line window and tail the output from the application Pod.
+   
+   ```
+   $ oc get pods
+   $ oc log pod -f <pod name>
+   ```
+   Substitute the name of the Pod in the command above.
+13.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *data* directory.  The XML data files should be immediately read by the microservice and you should be able to view corresponding messages in the command window.  See below.
+
+   ```
+   2016-05-17 22:52:08,531 [e://target/data] INFO  readVehicleFiles               - Read Vehicle Data File : /deployments/target/data/vn01.xml
+   <?xml version="1.0"?>
+   <vehicle>
+	      <vehicleId>001</vehicleId>
+	      <make>Honda</make>
+	      <model>Civic</model>
+	      <type>LX</type>
+	      <year>2016</year>
+	      <price>18999</price>
+	      <inventoryCount>2</inventoryCount>
+   </vehicle>
+   ```
+14.  Lastly, test the REST end-points using your browser. Substitute the correct values for route name, project name and 
 openshift domain name as they apply to your OpenShift environment.
   * Test *'getVehicle'* end-point. The result of the REST API call should be JSON data. Vehicle numbers/IDs 
   which you can retrieve are vno01 ... vno05.  Substitute the exact vehicle ID you want to retrieve in the URL (below).
   ```
-  http://route name-project name.openshift domain name/AutoDMS/getVehicle/vno01
+  http://route name-project name.openshift domain name/AutoDMS/getVehicle/001
   ```
   * Test *'availableVehicle'* end-point.  See an example below.
   ```
