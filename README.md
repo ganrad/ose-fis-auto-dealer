@@ -137,7 +137,7 @@ The steps listed below for building and deploying this microservice follows appr
    $ oc get pods
    $ oc log pod -f <pod name>
    ```
-   Substitute the name of the Pod in the command above.
+   Substitute the name of your Pod in the command above.
 13.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *data* directory.  The XML data files should be immediately read by the microservice and you should be able to view corresponding messages in the command window.  See below.
 
    ```
@@ -163,4 +163,17 @@ openshift domain name as they apply to your OpenShift environment.
   * Test *'availableVehicle'* end-point.  See an example below.
   ```
   http://route name-project name.openshift domain name/AutoDMS/availableVehicle/pricerange/20000/30000
+  ```
+15.  You can view the REST API responses in the Pod output / command window as shown below.
+
+  ```
+  2016-05-17 22:53:24,788 [tp1244815033-20] INFO  getVehicle                     - {
+  "vehicleId" : "001",
+  "make" : "Honda",
+  "model" : "Civic",
+  "type" : "LX",
+  "year" : "2016",
+  "price" : 18999,
+  "inventoryCount" : 2
+}
   ```
