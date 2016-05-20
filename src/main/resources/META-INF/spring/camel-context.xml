@@ -25,9 +25,22 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 	
-	<bean id="vehicleGenerator" class="com.redhat.fis.dms.mockprocessor.VehicleGenerator"></bean>
-	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreResourceNotFound" value="true" />
+  		<property name="searchSystemEnvironment" value="true" />
+  		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+	</bean>
+
+	<bean id="mongoBean" class="com.mongodb.Mongo">
+		<constructor-arg index="0">
+			<bean class="com.mongodb.MongoURI">
+				<constructor-arg index="0" value="mongodb://${MONGODB_SERVICE_HOST}:${MONGODB_SERVICE_PORT}/"/>
+			</bean>
+		</constructor-arg>
+	</bean>
+
   <camelContext xmlns="http://camel.apache.org/schema/spring">
+	<propertyPlaceholder id="properties" location="classpath:mongodb.properties"/>
 
   <restConfiguration component="jetty" host="0.0.0.0" port="9092" />
   <rest path="/AutoDMS">
@@ -45,25 +58,35 @@
     <unmarshal>
       <jaxb contextPath="com.redhat.fis.dms.model"/>
     </unmarshal>
-    <bean ref="vehicleGenerator" method="addVehicle"/>
+    <log message="Database:{{mongodb.database}}, Collection:{{mongodb.collection}}"/>
+    <to uri="mongodb:mongoBean?database={{mongodb.database}}&amp;collection={{mongodb.collection}}&amp;operation=insert"/>
+    <log message="Insert in mongodb collection successful!"/>
   </route>
 
   <route id="availableVehicle">
     <from uri="direct:availableVehicle"/>
-    <bean ref="vehicleGenerator" method="avaliablePriceRangeVehicle(${headers.minprice},${headers.maxprice})"/>
+    <setBody>
+	<simple>{ $and: [ {price: { $gte: ${headers.minprice}}}, {price: { $lte: ${headers.maxprice}}} ] }</simple>
+    </setBody>
+    <log message="Mongodb: Request query: ${body}"/>
+    <to uri="mongodb:mongoBean?database={{mongodb.database}}&amp;collection={{mongodb.collection}}&amp;operation=findAll"/>
     <marshal>
       <json prettyPrint="true" library="Jackson"/>
     </marshal>
-    <log message="${body}"/>
+    <log message="Mongodb: Response: ${body}"/>
   </route>
 
   <route id="getVehicle">
     <from uri="direct:getVehicle"/>
-    <bean ref="vehicleGenerator" method="getVehicle(${headers.vehicleid})"/>
+    <setBody>
+	<simple>{"vehicleId":"${headers.vehicleid}"}</simple>
+    </setBody>
+    <log message="Mongodb: Request query: ${body}"/>
+    <to uri="mongodb:mongoBean?database={{mongodb.database}}&amp;collection={{mongodb.collection}}&amp;operation=findOneByQuery"/>
     <marshal>
       <json prettyPrint="true" library="Jackson"/>
     </marshal>
-    <log message="${body}"/>
+    <log message="Mongodb: Response: ${body}"/>
   </route>
   
 </camelContext>

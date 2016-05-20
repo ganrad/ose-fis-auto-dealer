@@ -101,6 +101,12 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-jackson</artifactId>
     </dependency>
+   
+    <!-- Add support for mongodb -->
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-mongodb</artifactId>
+    </dependency>
    	
     <!-- Add support for JAXB marshaling -->
     <dependency>
