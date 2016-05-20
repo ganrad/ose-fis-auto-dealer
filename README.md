@@ -10,20 +10,20 @@ For building Apache Camel applications within Docker containers and then deployi
 This microservice exposes a RESTFul API with two *http* end-points.  The microservice has been adapted from it's original version posted 
 by Wei Meilin - [jboss-fis-autodealer](https://github.com/jbossdemocentral/jboss-fis-autodealer).
 
-The auto-dealer microservice application is implemented using Apache Camel routes (integration flows).  At a high level, the Camel routes execute the following sequence of steps (see diagram below) :
+The auto-dealer microservice application is implemented using Apache Camel routes (integration flows).  At a high level, the Camel routes execute the following sequence of steps (see description and diagram below) :
 
-1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share.
-2.  Un-marshall/De-serialize the XML files into Java objects (POJO's).
-3.  Cache the vehicle POJO's in an array list in memory.
-4.  Expose REST (HTTP) end-points to allow users to retrieve (GET) vehicle information. Serialize the corresponding vehicle POJO's and return data in *JSON* format.
+1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share/directory.
+2.  Un-marshall/De-serialize the XML data read from files into JSON strings.
+3.  Store the vehicle data (JSON strings) within collections in MongoDB NoSQL persistent database.
+4.  Expose two REST (HTTP) end-points to allow users to query and retrieve (GET) vehicle information from the backend persistent data store (MongoDB).
 
 ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.png)
-
-Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.
 
 In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will need to mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application. This can be done by defining a [Persistent Volume (PV)](https://docs.openshift.com/enterprise/3.1/architecture/additional_concepts/storage.html#persistent-volumes) object in OpenShift that points to the exported NFS directory.  Additionally, we will also need to create a [Persistent Volume Claim (PVC)](https://docs.openshift.com/enterprise/3.1/architecture/additional_concepts/storage.html#persistent-volume-claims) object in OpenShift and then specify the PVC information in the *'volume mount'* section within the Pod manifest.  This would essentially allow the application Pod to retrieve data from the mounted file system directory.
 
 OpenShift comes with a wide variety of persistant storage plug-ins that allow containerized applications to retrieve/store data from multiple persistent storage systems.  The persistent storage plug-ins that ship with OpenShift can be viewed [here](https://docs.openshift.com/enterprise/3.1/install_config/persistent_storage/index.html).
+
+Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.  For this reason, we will be persisting the vehicle data read from the file system (NFS directory) into a persistent NoSQL database (MongoDB).  All REST API (HTTP) requests will be translated into queries by FIS routes and data will be fetched from the underlying MongoDB persistent database.
 
 ## Steps for deploying *ose-fis-auto-dealer* microservice
 The steps listed below for building and deploying this microservice follows approach (1) above, the S2I workflow.
