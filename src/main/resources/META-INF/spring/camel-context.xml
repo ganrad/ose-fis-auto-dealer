@@ -26,6 +26,11 @@
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 	
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:mongodb.properties</value>
+			</list>
+		</property>
 		<property name="ignoreResourceNotFound" value="true" />
   		<property name="searchSystemEnvironment" value="true" />
   		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
@@ -34,7 +39,7 @@
 	<bean id="mongoBean" class="com.mongodb.Mongo">
 		<constructor-arg index="0">
 			<bean class="com.mongodb.MongoURI">
-				<constructor-arg index="0" value="mongodb://${MONGODB_SERVICE_HOST}:${MONGODB_SERVICE_PORT}/"/>
+				<constructor-arg index="0" value="mongodb://${mongodb.user}:${mongodb.password}@${MONGODB_SERVICE_HOST}:${MONGODB_SERVICE_PORT}/${mongodb.database}"/>
 			</bean>
 		</constructor-arg>
 	</bean>
