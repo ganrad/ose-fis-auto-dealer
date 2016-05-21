@@ -13,7 +13,7 @@
   "parameters": [
     {
       "name": "APP_NAME",
-      "value": "vehicleAPI",
+      "value": "auto-dealer-app",
       "description": "Application Name"
     },
     {
