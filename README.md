@@ -152,13 +152,16 @@ B] Deploy *ose-fis-auto-dealer* microservice
   $ oc get pods
   ```
   * At this point, you should have successfully built an Apache Camel based RESTful microservice using OpenShift FIS tooling and deployed the same to OpenShift PaaS!
-10.  Open a command line window and tail the output from the application Pod.
+  
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver2/ose-auto-fis.png)
+
+10.  Open a command line window and tail the output from the FIS application Pod (Not the MongoDB application Pod!).
    
    ```
    $ oc get pods
    $ oc log pod -f <pod name>
    ```
-   Substitute the name of your Pod in the command above.
+   Substitute the name of your FIS Pod in the command above.
 11.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *data* directory.  The XML files should be immediately read by this microservice, the data should be converted to JSON format & persisted to the collection *'ose'* within MongoDB database *'test'*.  You should also be able to view corresponding log messages in the command window as shown below.
 
    ```
@@ -208,7 +211,7 @@ openshift domain name as they apply to your OpenShift environment.
   ```
   db.ose.find()
   ```
-  Exit the MongoDB console.
+  Finally, exit the MongoDB console using the command below.
   
   ```
   quit()
