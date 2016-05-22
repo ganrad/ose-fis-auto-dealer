@@ -14,7 +14,7 @@ The auto-dealer microservice application is implemented using Apache Camel route
 
 1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share/directory.
 2.  Un-marshall/De-serialize the XML data read from files into JSON strings.
-3.  Store the vehicle data (JSON strings) within collections in MongoDB NoSQL persistent database.
+3.  Store the vehicle info (JSON data) within collections in MongoDB NoSQL persistent database.
 4.  Expose two REST (HTTP) end-points to allow users to query and retrieve (GET) vehicle information from the backend persistent data store (MongoDB).
 
 ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.png)
@@ -25,29 +25,46 @@ OpenShift comes with a wide variety of persistant storage plug-ins that allow co
 
 Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.  For this reason, we will be persisting the vehicle data read from the file system (NFS directory) into a persistent NoSQL database (MongoDB).  All REST API (HTTP) requests will be translated into queries by FIS routes and data will be fetched from the underlying MongoDB persistent database.
 
-## Steps for deploying *ose-fis-auto-dealer* microservice
-The steps listed below for building and deploying this microservice follows approach (1) above, the S2I workflow.
+## Steps for deploying MongoDB container and FIS microservices on OpenShift Enterprise v3.1/v3.2
+The steps listed below for building and deploying the microservice applications follows approach (1) described above, the S2I workflow.
 
-1.  Fork this repository so that it gets added to your GitHub account.
-2.  Download the template file (template object definition) into your master node.
-  * Click on *kube-template.json*, then click on *Raw*.  Copy the http URL and use the CURL command to download the template file to your
-  OpenShift master node (OR to the server where you have installed OpenShift client tools).
-  ```
-  $ curl https://raw.githubusercontent.com/<your GIT account name>/ose-fis-auto-dealer/master/kube-template.json > kube-template.json
-  ```
-3.  Login to OpenShift 
+A] Deploy MongoDB NoSQL Database  
+
+1.  Login to OpenShift using the Web UI - 
 
   ```
-  $ oc login -u user -p password
+  https://<Host name or IP address of OSE master node>:8443/
   ```
-4.  Create a new project 
+
+  Or Alternatively use the command line interface (CLI) to create the project as shown below.
+
+  ```
+  $ oc login -u user -p password  
+  ```
+  
+2.  Create a new project.  Use command shown below if using the CLI.
 
   ```
   $ oc new-project fis-apps
   ```
-5.  Import the template file into your project 
-  * Alternatively, you can import the template to the 'openshift' project using '-n openshift' option.  This would give all OpenShift users access to this 
-  template definition.
+
+3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Use values for the MongoDB user name, password & database base name as shown in the screenshot below.  If you choose to use different values for these parameters, then you will also need to modify the corresponding property values in file 'src/main/resources/mongodb.properties'.  You can choose any value for the MongoDB admin password.  Finally click on 'create' application.
+
+4.  Switch to the 'overview' tab on the left navigational panel & check to make sure the MongoDB application (Pod) has started ok.  See below.  Proceed with steps listed in [B].
+
+
+B] Deploy *ose-fis-auto-dealer* microservice
+
+1.  Fork this repository so that it gets added to your GitHub account.
+2.  Download the template file (template object definition) into your master node.
+  * Click on *kube-template.json*, then click on *Raw*.  Copy the http URL and use the CURL command to download the template file to your OpenShift master node (OR to the server where you have installed OpenShift client tools).
+  
+  ```
+  $ curl https://raw.githubusercontent.com/<your GIT account name>/ose-fis-auto-dealer/master/kube-template.json > kube-template.json
+  ```
+3.  Import the template file into your project 
+  * Alternatively, you can import the template to the 'openshift' project using '-n openshift' option.  This would give all OpenShift users access to this template definition.
+  
   ```
   $ oc create -f kube-template.json
   ```
@@ -55,13 +72,13 @@ The steps listed below for building and deploying this microservice follows appr
   ```
   $ oc get templates
   ```
-6.  On each OpenShift node, enable writing to NFS volumes with SELinux. The -P option ensures the setting is persisted between reboots.
+4.  On each OpenShift node, enable writing to NFS volumes with SELinux. The -P option ensures the setting is persisted between reboots.
 
   ```
   $ setsebool -P virt_use_nfs 1
   $ setsebool -P virt_sandbox_use_nfs 1
   ```
-7.  Create a *Persistent Volume* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the configuration directory.
+5.  Create a *Persistent Volume* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the configuration directory.
 
   ```
   apiVersion: v1
@@ -82,7 +99,7 @@ The steps listed below for building and deploying this microservice follows appr
   **path** : Directory (full path) exported by the NFS server.  
   **server** : Hostname (or IP address) of the NFS server.
 
-8.  Create a *Persistent Volume Claim* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pvc.yaml* file from the configuration directory.
+6.  Create a *Persistent Volume Claim* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pvc.yaml* file from the configuration directory.
 
    ```
    apiVersion: v1
@@ -96,23 +113,22 @@ The steps listed below for building and deploying this microservice follows appr
        requests:
          storage: 225Mi
    ```
-9.  Check if the PVC has been associated with the PV.
+7.  Check if the PVC has been associated with the PV.
 
    ```
    [gradhakr@ose31-master ~]$ oc get pvc
    NAME         LABELS    STATUS    VOLUME    CAPACITY   ACCESSMODES   AGE
    nfs-claim1   <none>    Bound     pv001     250Mi      RWO           3h
    ```
-10.  Create the microservice application
+8.  Create the microservice application
   * This command kicks off the S2I build process in OpenShift.
   * Alternatively, you can use the OpenShift Web UI to create the application.
   * Remember to substitute your GIT account user name in the GIT http url below.
   ```
   $ oc new-app --template=fis-auto-template --param=GIT_REPO=https://github.com/<your GIT account username>/ose-fis-auto-dealer.git
   ```
-11.  Use the commands below to check the status of the build and deployment 
-  * The build (Maven) might take a while (approx. 10-20 mins) to download all dependencies, build the code and then push the image into
-  the integrated Docker registry.
+9.  Use the commands below to check the status of the build and deployment 
+  * The build (Maven) might take a while (approx. 10-20 mins) to download all dependencies, build the code and then push the image into the integrated Docker registry.
   * Once the build completes and the image is pushed into the registry, the deployment process would start.
   * Check the builds
   ```
@@ -131,14 +147,14 @@ The steps listed below for building and deploying this microservice follows appr
   $ oc get pods
   ```
   * At this point, you should have successfully built an Apache Camel based RESTful microservice using OpenShift FIS tooling and deployed the same to OpenShift PaaS!
-12.  Open a command line window and tail the output from the application Pod.
+10.  Open a command line window and tail the output from the application Pod.
    
    ```
    $ oc get pods
    $ oc log pod -f <pod name>
    ```
    Substitute the name of your Pod in the command above.
-13.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *data* directory.  The XML data files should be immediately read by the microservice and you should be able to view corresponding messages in the command window.  See below.
+11.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *data* directory.  The XML files should be immediately read by this microservice, the data should be converted to JSON format & persisted to the collection *'ose'* within MongoDB database *'test'*.  You should also be able to view corresponding log messages in the command window as shown below.
 
    ```
    2016-05-17 22:52:08,531 [e://target/data] INFO  readVehicleFiles               - Read Vehicle Data File : /deployments/target/data/vn01.xml
@@ -153,7 +169,7 @@ The steps listed below for building and deploying this microservice follows appr
 	      <inventoryCount>2</inventoryCount>
    </vehicle>
    ```
-14.  Lastly, test the REST end-points using your browser. Substitute the correct values for route name, project name and 
+12.  Test the REST end-points using your browser. Substitute the correct values for route name, project name and 
 openshift domain name as they apply to your OpenShift environment.
   * Test *'getVehicle'* end-point. The result of the REST API call should be JSON data. Vehicle numbers/IDs 
   which you can retrieve are vno01 ... vno05.  Substitute the exact vehicle ID you want to retrieve in the URL (below).
@@ -164,7 +180,7 @@ openshift domain name as they apply to your OpenShift environment.
   ```
   http://route name-project name.openshift domain name/AutoDMS/availableVehicle/pricerange/20000/30000
   ```
-15.  You can view the REST API responses in the Pod output / command window as shown below.
+13.  You can view the REST API responses in the Pod output / command window as shown below.
 
   ```
   2016-05-17 22:53:24,788 [tp1244815033-20] INFO  getVehicle                     - {
@@ -177,3 +193,6 @@ openshift domain name as they apply to your OpenShift environment.
   "inventoryCount" : 2
 }
   ```
+
+14.  Log into the MongoDB application container terminal window using the OpenShift Web UI.
+15.  Log into the MongoDB client console and issue the following commands to verify the data has been persisted into the *'ose'* collection.
