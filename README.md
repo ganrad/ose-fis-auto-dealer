@@ -14,7 +14,8 @@ The auto-dealer microservice application is implemented using Apache Camel route
 
 1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share/directory.
 2.  Un-marshall/De-serialize the XML data read from files into JSON strings.
-3.  Store the vehicle info (JSON data) within collections in MongoDB NoSQL persistent database.
+3.  Store the vehicle info (JSON data) within collections in MongoDB NoSQL persistent database.  
+  **Note:** This example uses a OpenShift provided MongoDB *Instant App* template to demonstrate how to save/retrieve application data in a *'ephemeral'* database instance.  For real-world or production applications, you will need to use the equivalent *'persistent'* MongoDB *Instant App* template.  While configuring this template, you will need to provide *Persistent Volume Claim* details so that the database is backed by a persistent storage volume. 
 4.  Expose two REST (HTTP) end-points to allow users to query and retrieve (GET) vehicle information from the backend persistent data store (MongoDB).
 
 ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.png)
@@ -104,7 +105,7 @@ The steps listed below for building and deploying the microservice applications 
   **path** : Directory (full path) exported by the NFS server.  
   **server** : Hostname (or IP address) of the NFS server.
 
-6.  Create a *Persistent Volume Claim* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pvc.yaml* file from the configuration directory.
+6.  Create a *Persistent Volume Claim* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pvc.yaml* file from the *configuration* directory.
 
    ```
    apiVersion: v1
