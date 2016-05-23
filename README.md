@@ -17,7 +17,7 @@ The auto-dealer microservice application is implemented using Apache Camel route
 3.  Store the vehicle info (JSON data) within collections in MongoDB NoSQL persistent database.
 4.  Expose two REST (HTTP) end-points to allow users to query and retrieve (GET) vehicle information from the backend persistent data store (MongoDB).
 
-![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver2/ose-fis.001.png)
+![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.png)
 
 In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will need to mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application. This can be done by defining a [Persistent Volume (PV)](https://docs.openshift.com/enterprise/3.1/architecture/additional_concepts/storage.html#persistent-volumes) object in OpenShift that points to the exported NFS directory.  Additionally, we will also need to create a [Persistent Volume Claim (PVC)](https://docs.openshift.com/enterprise/3.1/architecture/additional_concepts/storage.html#persistent-volume-claims) object in OpenShift and then specify the PVC information in the *'volume mount'* section within the Pod manifest.  This would essentially allow the application Pod to retrieve data from the mounted file system directory.
 
@@ -50,13 +50,13 @@ A] Deploy MongoDB NoSQL Database
 
 3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Use values for the MongoDB user name, password & database base name as shown in the screenshot below.  If you choose to use different values for these parameters, then you will also need to modify the corresponding property values in file 'src/main/resources/mongodb.properties'.  You can choose any value for the MongoDB admin password.  Finally click on 'create' application.  See screenshots below.
 
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver2/mongodb-1.png)  
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-1.png)  
   
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver2/mongodb-2.png)
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-2.png)
 
 4.  Switch to the 'overview' tab on the left navigational panel & check to make sure the MongoDB application (Pod) has started ok.  See screenshot below.
 
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver2/mongodb-3.png)
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-3.png)
 
 B] Deploy *ose-fis-auto-dealer* microservice
 
@@ -200,9 +200,9 @@ openshift domain name as they apply to your OpenShift environment.
   ```
 
 14.  Open the MongoDB application container (Pod) terminal window using the OpenShift Web UI.
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver2/mongodb-4.png)
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-4.png)
 15.  Log into the MongoDB client console and issue the following commands to verify the data has been persisted into the *'ose'* collection.
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver2/mongodb-5.png)
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-5.png)
   You can also retrieve all the saved documents in MongoDB using the command below.
 
   ```
