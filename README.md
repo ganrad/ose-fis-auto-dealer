@@ -28,7 +28,7 @@ Microservices are stateless and are ideal candidates for deploying onto a contai
 ## Steps for deploying MongoDB container and FIS microservices on OpenShift Enterprise v3.1/v3.2
 The steps listed below for building and deploying the microservice applications follows approach (1) described above, the S2I workflow.
 
-A] Deploy MongoDB NoSQL Database  
+### A] Deploy MongoDB NoSQL Database  
 
 1.  Login to OpenShift using the Web UI - 
 
@@ -58,7 +58,7 @@ A] Deploy MongoDB NoSQL Database
 
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver2/mongodb-3.png)
 
-B] Deploy *ose-fis-auto-dealer* microservice
+### B] Deploy *ose-fis-auto-dealer* microservice
 
 1.  Fork this repository so that it gets added to your GitHub account.
 2.  Download the template file (template object definition) into your master node.
