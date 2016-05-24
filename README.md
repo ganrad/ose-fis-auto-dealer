@@ -15,7 +15,7 @@ The auto-dealer microservice application is implemented using Apache Camel route
 1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share/directory.
 2.  Un-marshall/De-serialize the XML data read from files into JSON strings.
 3.  Store the vehicle info (JSON data) within collections in MongoDB NoSQL persistent database.  
-  **Note:** This example uses a OpenShift provided MongoDB *Instant App* template to demonstrate how to save/retrieve application data in a *'ephemeral'* ('non-persistent') database instance.  For real-world or production applications, you will need to use the equivalent *'persistent'* MongoDB *Instant App* template.  While configuring this template, you will need to provide *Persistent Volume Claim* details so that the database is backed by a persistent storage volume. 
+  **Note:** This example uses a OpenShift provided MongoDB *Instant App* template to demonstrate how to save/retrieve application data in a *'ephemeral'* ('non-persistent') database instance.  For real-world (production) applications, you will need to use the provided *'persistent'* MongoDB *Instant App* template.  While configuring this template, you will need to provide *Persistent Volume Claim* details so that the database is backed by a persistent storage volume. 
 4.  Expose two REST (HTTP) end-points to allow users to query and retrieve (GET) vehicle information from the backend persistent data store (MongoDB).
 
 ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.png)
@@ -49,7 +49,7 @@ The steps listed below for building and deploying the microservice applications 
   $ oc new-project fis-apps
   ```
 
-3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Specify values for MongoDB user name, password & database name as shown in the screenshot below.  Please note down these values as we will need them while creating *secrets* discussed in Step B below.  You can choose any value for the MongDB admin password.  Finally click on 'create' application.  See screenshots below.
+3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Specify values for MongoDB user name, password & database name as shown in the screenshot below.  Please note down these values as we will need them while creating *'secrets'* discussed in Step B below.  You can choose any value for the MongDB admin password.  Finally click on 'create' application.  See screenshots below.
 
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-1.png)  
   
@@ -59,7 +59,54 @@ The steps listed below for building and deploying the microservice applications 
 
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-3.png)
 
-### B] Deploy *ose-fis-auto-dealer* microservice
+### B] Create *Secrets* and update *Service Accounts* in OpenShift
+A *secret* is used to hold sensitive information such as OAuth tokens, passwords and SSH keys in OpenShift.  Putting confidential and sensitive information such as database user names and passwords in a **secret** is much more safer and secure than storing them as plain text values directly in a Pod definition.  Using *secret* objects in OpenShift allows for more control around how confidential info. is stored and accessed and reduces the risk of accidental exposure.
+
+We will be encrypting and storing the MongoDB user name, password and database name in a *secret* using the steps outlined below.
+
+1.  Use the *curl* command to download & save the *secrets.yaml* file from the *configuration* directory.  If you specified the same values for MongoDB user name, password and database name as depicted in the picture in step A:3 above, then you can skip step 2 below.
+
+2.  Generate the Base64 encoded value for the MongoDB *user name* using the command below.
+  
+  ```
+  $ echo "mongodb.user=oseUser" | Base64 -w 0
+  ```
+  * Substitute the MongoDB **user name** you used in step A:3 (above) in place of **oseUser** in the command above.
+  * Copy the generated *Base64* (output of command above) value and save it in the *'secrets.yaml'* file which you downloaded in step 1.  See below.
+  ```
+  db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
+  ```
+  * Repeat this command to generate Base64 encoded values for *mongodb.password* and *mongodb.database* & then save them in the *'secrets.yaml'* file.  Your *secrets.yaml* file should look like the definition below.  Encrypted values for the  secret data may differ based on the values your provided.
+  
+  ```
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: fis-auto-db-secret
+  type: Opaque
+  data:
+    db.name: bW9uZ29kYi5kYXRhYmFzZT10ZXN0Cg==
+    db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
+    db.password: bW9uZ29kYi5wYXNzd29yZD1vcGVuc2hpZnQK
+  ```
+
+3. Use the command below to create the *secret* object.
+
+  ```
+  oc create -f secrets.yaml
+  ```
+  * List the *secret* objects
+  ```
+  oc get secrets
+  ```
+
+4.  Finally, add the newly created *secret* to the *default* Service Account.  In OpenShift, *Service Accounts* are used by system level components to authenticate against the Kubernetes API server.  Service Accounts store API token info. and allow system level components to access the API server.  In addition to providing API credentials, an application Pod's service account determines which secrets the Pod is allowed to access and use.  We will now add the *secret* we created in step 3 to the *default* service account.
+  
+  ```
+  oc secrets add serviceaccount/default secret/fis-auto-db-secret --for=mount
+  ```
+  
+### C] Deploy *ose-fis-auto-dealer* microservice
 
 1.  Fork this repository so that it gets added to your GitHub account.
 2.  Download the template file (template object definition) into your master node.
