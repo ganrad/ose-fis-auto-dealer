@@ -232,15 +232,19 @@ We will be encrypting and storing the MongoDB user name, password and database n
    ```
 12.  Test the REST end-points using your browser. Substitute the correct values for route name, project name and 
 openshift domain name as they apply to your OpenShift environment.
-  * Test *'getVehicle'* end-point. The result of the REST API call should be JSON data. Vehicle numbers/IDs 
-  which you can retrieve are vno01 ... vno05.  Substitute the exact vehicle ID you want to retrieve in the URL (below).
+  * Test *'getVehicle'* end-point using URL below. The result of the REST API call should be JSON data. Vehicle numbers/IDs 
+  which you can retrieve are vno01 ... vno04.  Substitute the exact vehicle ID you want to retrieve in the URL (below).
   ```
   http://route name-project name.openshift domain name/AutoDMS/getVehicle/001
   ```
-  * Test *'availableVehicle'* end-point.  See an example below.
+  * Test *'availableVehicle'* end-point using URL below.
   ```
   http://route name-project name.openshift domain name/AutoDMS/availableVehicle/pricerange/20000/30000
   ```
+  * See browser screenshot below.
+  
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/ver3/results01.png)
+
 13.  You can view the REST API responses in the Pod output / command window as shown below.
 
   ```
@@ -269,3 +273,5 @@ openshift domain name as they apply to your OpenShift environment.
   ```
   quit()
   ```
+16.  Open the FIS microservice container (Pod) terminal window using the OpenShift Web UI.  Then verify the mounted secrets in the '/etc/secrets-vol' directory.  See screenshot below.
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/secrets01.png)
