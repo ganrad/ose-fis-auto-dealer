@@ -361,9 +361,10 @@
 	                 {
 		"name": "ose-fis-db-secrets",
 		"secret": {
-		  "secretName" : "fis-auto-db-secret",
+		  "secretName" : "fis-auto-db-secret"
 	        } 	
             } ]
+        }
         }
       },
       "status": {}
