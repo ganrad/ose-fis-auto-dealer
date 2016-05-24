@@ -28,9 +28,9 @@
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>file:/etc/db.name</value>
-				<value>file:/etc/db.username</value>
-				<value>file:/etc/db.password</value>
+				<value>file:/etc/vol-secrets/db.name</value>
+				<value>file:/etc/vol-secrets/db.username</value>
+				<value>file:/vol-secrets/etc/db.password</value>
 			</list>
 		</property>
 		<property name="ignoreResourceNotFound" value="true" />

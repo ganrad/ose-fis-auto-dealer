@@ -346,7 +346,7 @@
 		},
 				  {
 		  "name": "ose-fis-db-secrets",
-		  "mountPath": "/etc",
+		  "mountPath": "/etc/vol-secrets",
 		  "readOnly": true
 		}]
               }
