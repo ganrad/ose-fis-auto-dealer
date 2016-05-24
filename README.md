@@ -153,6 +153,8 @@ The steps listed below for building and deploying the microservice applications 
   $ oc get pods
   ```
   * At this point, you should have successfully built an Apache Camel based RESTful microservice using OpenShift FIS tooling and deployed the same to OpenShift PaaS!
+  
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-auto-fis.png)
 10.  Open a command line window and tail the output from the application Pod.
    
    ```
