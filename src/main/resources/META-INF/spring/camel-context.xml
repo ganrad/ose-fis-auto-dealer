@@ -30,7 +30,7 @@
 			<list>
 				<value>file:/etc/vol-secrets/db.name</value>
 				<value>file:/etc/vol-secrets/db.username</value>
-				<value>file:/vol-secrets/etc/db.password</value>
+				<value>file:/etc/vol-secrets/db.password</value>
 			</list>
 		</property>
 		<property name="ignoreResourceNotFound" value="true" />
