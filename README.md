@@ -1,7 +1,6 @@
-# OpenShift FIS microservice *Tutorial*
-# *ose-fis-auto-dealer*:
+# OpenShift FIS microservice *ose-fis-auto-dealer*:
 
-**Important Note:** This project (demo) assumes the readers have a basic working knowledge of *Red Hat OpenShift Enterprise v3.1/v3.2* (or upstream project -> OpenShift Origin) & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation tutorial.  Links to a couple of useful on-line resources are listed below.
+**Important Note:** This project (demo) assumes the readers have a basic working knowledge of *Red Hat OpenShift Enterprise v3.1/v3.2* (or upstream project -> OpenShift Origin) & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation.  For your reference, links to a couple of useful on-line resources are listed below.
 
 1.  [OpenShift Enterprise Documentation](https://docs.openshift.com/)
 2.  [Kubernetes Documentation](http://kubernetes.io/docs/user-guide/pods/)
