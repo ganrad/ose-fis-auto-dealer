@@ -1,6 +1,6 @@
 # OpenShift FIS microservice *ose-fis-auto-dealer*:
 
-**Important Note:** This project (demo) assumes the readers have a basic working knowledge of *Red Hat OpenShift Enterprise v3.1/v3.2* (or upstream project -> OpenShift Origin) & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation.  For your reference, links to a couple of useful on-line resources are listed below.
+**Important Note:** This project assumes the readers have a basic working knowledge of *Red Hat OpenShift Enterprise v3.1/v3.2* (or upstream project -> OpenShift Origin) & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation.  For quick reference, links to a couple of useful on-line resources are listed below.
 
 1.  [OpenShift Enterprise Documentation](https://docs.openshift.com/)
 2.  [Kubernetes Documentation](http://kubernetes.io/docs/user-guide/pods/)
@@ -65,20 +65,20 @@ The steps listed below for building and deploying the microservice applications 
 
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-3.png)
 
-### B] Create *Secrets* and update *Service Accounts* in OpenShift
-A *secret* is used to hold sensitive information such as OAuth tokens, passwords and SSH keys in OpenShift.  Putting confidential and sensitive information such as database user names and passwords in a **secret** is much more safer and secure than storing them as plain text values directly in a Pod definition.  Using *secret* objects in OpenShift allows for more control around how confidential info. is stored and accessed and reduces the risk of accidental exposure.
+### B] Create a *Secret* and update *Service Account* in OpenShift
+A *secret* is used to hold sensitive information such as OAuth tokens, passwords and SSH keys in OpenShift.  Putting confidential and sensitive information such as database user names and passwords in a **secret** is much more safer and secure than storing them as plain text values directly in a application configuration file or in a Pod definition.  Using *secret* objects in OpenShift allows for more control over how confidential info. is stored and accessed and reduces the risk of accidental exposure.
 
 We will be encrypting and storing the MongoDB user name, password and database name in a *secret* using the steps outlined below.
 
-1.  Use the *curl* command to download & save the *secrets.yaml* file from the *configuration* directory.  If you specified the same values for MongoDB user name, password and database name as depicted in the picture in step A:3 above, then you can skip step 2 below.
+1.  Use the *curl* command to download & save the *secrets.yaml* file from the *configuration* directory.  If you specified the same values for MongoDB user name, password and database name as depicted in the picture in Step A:3 above, then you can skip Step 2 below.
 
 2.  Generate the Base64 encoded value for the MongoDB *user name* using the command below.
   
   ```
   $ echo "mongodb.user=oseUser" | Base64 -w 0
   ```
-  * Substitute the MongoDB **user name** you used in step A:3 (above) in place of **oseUser** in the command above.
-  * Copy the generated *Base64* (output of command above) value and save it in the *'secrets.yaml'* file which you downloaded in step 1.  See below.
+  * Substitute the MongoDB **user name** you used in Step A:3 (above) in place of **oseUser** in the command above.
+  * Copy the generated *Base64* (output of command above) value and save it in the *'secrets.yaml'* file which you downloaded in Step 1.  Values within the *data* stanza in the secrets file (YAML) take the form *'name: value'*.  See below.
   ```
   db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
   ```
@@ -106,7 +106,7 @@ We will be encrypting and storing the MongoDB user name, password and database n
   oc get secrets
   ```
 
-4.  Finally, add the newly created *secret* to the *default* Service Account.  In OpenShift, *Service Accounts* are used by system level components to authenticate against the Kubernetes API server.  Service Accounts store API token info. and allow system level components to access the API server, perform CRUD operations on API objects etc.  In addition to providing API credentials, an application Pod's service account determines which secrets the Pod is allowed to access and use.  We will now add the *secret* we created in step 3 to the *default* service account.
+4.  Finally, add the newly created *secret* to the *default* Service Account.  In OpenShift, *Service Accounts* are used by system level components to authenticate against the Kubernetes API server.  Service Accounts store API token info. and allow system level components to access the API server, perform CRUD operations on API objects etc.  In addition to providing API credentials, an application Pod's service account determines which secrets the Pod is allowed to access and use.  Unless otherwise a Pod's definition specifies a particular service account, every Pod in a given project runs with the *'default'* service account.  So we will now add the *secret* we created in Step 3 to the *default* service account in our project.
   
   ```
   oc secrets add serviceaccount/default secret/fis-auto-db-secret --for=mount
