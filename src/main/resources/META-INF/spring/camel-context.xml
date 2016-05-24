@@ -28,6 +28,7 @@
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
+				<value>file:/etc/db.name</value>
 				<value>file:/etc/db.username</value>
 				<value>file:/etc/db.password</value>
 			</list>
