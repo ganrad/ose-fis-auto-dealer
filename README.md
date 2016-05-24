@@ -49,7 +49,7 @@ The steps listed below for building and deploying the microservice applications 
   $ oc new-project fis-apps
   ```
 
-3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Use values for the MongoDB user name, password & database base name as shown in the screenshot below.  If you choose to use different values for these parameters, then you will also need to modify the corresponding property values in file 'src/main/resources/mongodb.properties'.  You can choose any value for the MongoDB admin password.  Finally click on 'create' application.  See screenshots below.
+3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Specify values for MongoDB user name, password & database name as shown in the screenshot below.  Please note down these values as we will need them while creating *secrets* discussed in Step B below.  You can choose any value for the MongDB admin password.  Finally click on 'create' application.  See screenshots below.
 
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-1.png)  
   
