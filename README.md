@@ -84,7 +84,7 @@ The steps listed below for building and deploying the microservice applications 
   $ setsebool -P virt_use_nfs 1
   $ setsebool -P virt_sandbox_use_nfs 1
   ```
-5.  Create a *Persistent Volume* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the configuration directory.
+5.  Create a *Persistent Volume* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the *configuration* directory.
 
   ```
   apiVersion: v1
