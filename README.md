@@ -1,4 +1,11 @@
-# OpenShift FIS microservice : *ose-fis-auto-dealer*
+# OpenShift FIS microservice *Tutorial*
+# *ose-fis-auto-dealer*:
+
+**Important Note:** This project (demo) assumes the readers have a basic working knowledge of *Red Hat OpenShift Enterprise v3.1/v3.2* (or upstream project -> OpenShift Origin) & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation tutorial.  Links to a couple of useful on-line resources are listed below.
+
+1.  [OpenShift Enterprise Documentation](https://docs.openshift.com/)
+2.  [Kubernetes Documentation](http://kubernetes.io/docs/user-guide/pods/)
+
 This project uses OpenShift FIS (Fuse Integration Services) tools and explains how to develop, build and deploy Apache Camel based microservices in OpenShift Enterprise v3.1/v3.2.
 
 For building Apache Camel applications within Docker containers and then deploying the resulting container images onto OpenShift, developers can take two different approaches or paths.  The steps outlined here use approach # 1 (see below) in order to build and deploy this microservice application.
@@ -100,7 +107,7 @@ We will be encrypting and storing the MongoDB user name, password and database n
   oc get secrets
   ```
 
-4.  Finally, add the newly created *secret* to the *default* Service Account.  In OpenShift, *Service Accounts* are used by system level components to authenticate against the Kubernetes API server.  Service Accounts store API token info. and allow system level components to access the API server.  In addition to providing API credentials, an application Pod's service account determines which secrets the Pod is allowed to access and use.  We will now add the *secret* we created in step 3 to the *default* service account.
+4.  Finally, add the newly created *secret* to the *default* Service Account.  In OpenShift, *Service Accounts* are used by system level components to authenticate against the Kubernetes API server.  Service Accounts store API token info. and allow system level components to access the API server, perform CRUD operations on API objects etc.  In addition to providing API credentials, an application Pod's service account determines which secrets the Pod is allowed to access and use.  We will now add the *secret* we created in step 3 to the *default* service account.
   
   ```
   oc secrets add serviceaccount/default secret/fis-auto-db-secret --for=mount
