@@ -28,7 +28,9 @@
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>classpath:mongodb.properties</value>
+				<value>file:/etc/vol-secrets/db.name</value>
+				<value>file:/etc/vol-secrets/db.username</value>
+				<value>file:/etc/vol-secrets/db.password</value>
 			</list>
 		</property>
 		<property name="ignoreResourceNotFound" value="true" />

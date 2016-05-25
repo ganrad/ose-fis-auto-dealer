@@ -343,6 +343,11 @@
 		"volumeMounts": [ {
 		  "mountPath": "/deployments/target/data",
 		  "name": "ose-fis-auto-volume"
+		},
+				  {
+		  "name": "ose-fis-db-secrets",
+		  "mountPath": "/etc/vol-secrets",
+		  "readOnly": true
 		}]
               }
             ],
@@ -352,8 +357,14 @@
 		  "claimName" : "nfs-claim1",
 		  "readOnly": false
 		}
-	    } ]	
-          }
+	    },
+	                 {
+		"name": "ose-fis-db-secrets",
+		"secret": {
+		  "secretName" : "fis-auto-db-secret"
+	        } 	
+            } ]
+        }
         }
       },
       "status": {}

@@ -1,4 +1,10 @@
-# OpenShift FIS microservice : *ose-fis-auto-dealer*
+# OpenShift FIS microservice *ose-fis-auto-dealer*:
+
+**Important Note:** This project assumes the readers have a basic working knowledge of *Red Hat OpenShift Enterprise v3.1/v3.2* (or upstream project -> OpenShift Origin) & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation.  For quick reference, links to a couple of useful on-line resources are listed below.
+
+1.  [OpenShift Enterprise Documentation](https://docs.openshift.com/)
+2.  [Kubernetes Documentation](http://kubernetes.io/docs/user-guide/pods/)
+
 This project uses OpenShift FIS (Fuse Integration Services) tools and explains how to develop, build and deploy Apache Camel based microservices in OpenShift Enterprise v3.1/v3.2.
 
 For building Apache Camel applications within Docker containers and then deploying the resulting container images onto OpenShift, developers can take two different approaches or paths.  The steps outlined here use approach # 1 (see below) in order to build and deploy this microservice application.
@@ -15,10 +21,10 @@ The auto-dealer microservice application is implemented using Apache Camel route
 1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share/directory.
 2.  Un-marshall/De-serialize the XML data read from files into JSON strings.
 3.  Store the vehicle info (JSON data) within collections in MongoDB NoSQL persistent database.  
-  **Note:** This example uses a OpenShift provided MongoDB *Instant App* template to demonstrate how to save/retrieve application data in a *'ephemeral'* database instance.  For real-world or production applications, you will need to use the equivalent *'persistent'* MongoDB *Instant App* template.  While configuring this template, you will need to provide *Persistent Volume Claim* details so that the database is backed by a persistent storage volume. 
+  **Note:** This example uses a OpenShift provided MongoDB *Instant App* template to demonstrate how to save/retrieve application data in a *'ephemeral'* ('non-persistent') database instance.  For real-world (production) applications, you will need to use the provided *'persistent'* MongoDB *Instant App* template.  While configuring this template, you will need to provide *Persistent Volume Claim* details so that the database is backed by a persistent storage volume. 
 4.  Expose two REST (HTTP) end-points to allow users to query and retrieve (GET) vehicle information from the backend persistent data store (MongoDB).
 
-![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/ose-fis.001.png)
+![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/ose-fis.001.png)
 
 In order to retrieve vehicle information from a persistent store such as a file system (Step 1), we will need to mount a NFS (Linux Network File System) share into the OpenShift Pod running our microservice application. This can be done by defining a [Persistent Volume (PV)](https://docs.openshift.com/enterprise/3.1/architecture/additional_concepts/storage.html#persistent-volumes) object in OpenShift that points to the exported NFS directory.  Additionally, we will also need to create a [Persistent Volume Claim (PVC)](https://docs.openshift.com/enterprise/3.1/architecture/additional_concepts/storage.html#persistent-volume-claims) object in OpenShift and then specify the PVC information in the *'volume mount'* section within the Pod manifest.  This would essentially allow the application Pod to retrieve data from the mounted file system directory.
 
@@ -49,17 +55,64 @@ The steps listed below for building and deploying the microservice applications 
   $ oc new-project fis-apps
   ```
 
-3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Use values for the MongoDB user name, password & database base name as shown in the screenshot below.  If you choose to use different values for these parameters, then you will also need to modify the corresponding property values in file 'src/main/resources/mongodb.properties'.  You can choose any value for the MongoDB admin password.  Finally click on 'create' application.  See screenshots below.
+3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Specify values for MongoDB user name, password & database name as shown in the screenshot below.  Please note down these values as we will need them while creating *'secrets'* discussed in Step B below.  You can choose any value for the MongDB admin password.  Finally click on 'create' application.  See screenshots below.
 
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-1.png)  
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/mongodb-1.png)  
   
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-2.png)
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/mongodb-2.png)
 
 4.  Switch to the 'overview' tab on the left navigational panel & check to make sure the MongoDB application (Pod) has started ok.  See screenshot below.
 
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-3.png)
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/mongodb-3.png)
 
-### B] Deploy *ose-fis-auto-dealer* microservice
+### B] Create a *Secret* and update *Service Account* in OpenShift
+A *secret* is used to hold sensitive information such as OAuth tokens, passwords and SSH keys in OpenShift.  Putting confidential and sensitive information such as database user names and passwords in a **secret** is much more safer and secure than storing them as plain text values directly in a application configuration file or in a Pod definition.  Using *secret* objects in OpenShift allows for more control over how confidential info. is stored and accessed and reduces the risk of accidental exposure.
+
+We will be encrypting and storing the MongoDB user name, password and database name in a *secret* using the steps outlined below.
+
+1.  Use the *curl* command to download & save the *secrets.yaml* file from the *configuration* directory.  If you specified the same values for MongoDB user name, password and database name as depicted in the picture in Step A:3 above, then you can skip Step 2 below.
+
+2.  Generate the Base64 encoded value for the MongoDB *user name* using the command below.
+  
+  ```
+  $ echo "mongodb.user=oseUser" | Base64 -w 0
+  ```
+  * Substitute the MongoDB **user name** you used in Step A:3 (above) in place of **oseUser** in the command above.
+  * Copy the generated *Base64* (output of command above) value and save it in the *'secrets.yaml'* file which you downloaded in Step 1.  Values within the *data* stanza in the secrets file (YAML) take the form *'name: value'*.  See below.
+  ```
+  db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
+  ```
+  * Repeat this command to generate Base64 encoded values for *mongodb.password* and *mongodb.database* & then save them in the *'secrets.yaml'* file.  Your *secrets.yaml* file should look like the definition below.  Encrypted values for the  secret data may differ based on the values your provided.
+  
+  ```
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: fis-auto-db-secret
+  type: Opaque
+  data:
+    db.name: bW9uZ29kYi5kYXRhYmFzZT10ZXN0Cg==
+    db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
+    db.password: bW9uZ29kYi5wYXNzd29yZD1vcGVuc2hpZnQK
+  ```
+
+3. Use the command below to create the *secret* object.
+
+  ```
+  oc create -f secrets.yaml
+  ```
+  * List the *secret* objects
+  ```
+  oc get secrets
+  ```
+
+4.  Finally, add the newly created *secret* to the *default* Service Account.  In OpenShift, *Service Accounts* are used by system level components to authenticate against the Kubernetes API server.  Service Accounts store API token info. and allow system level components to access the API server, perform CRUD operations on API objects etc.  In addition to providing API credentials, an application Pod's service account determines which secrets the Pod is allowed to access and use.  Unless otherwise a Pod's definition specifies a particular service account, every Pod in a given project runs with the *'default'* service account.  So we will now add the *secret* we created in Step 3 to the *default* service account in our project.
+  
+  ```
+  oc secrets add serviceaccount/default secret/fis-auto-db-secret --for=mount
+  ```
+  
+### C] Deploy *ose-fis-auto-dealer* microservice
 
 1.  Fork this repository so that it gets added to your GitHub account.
 2.  Download the template file (template object definition) into your master node.
@@ -84,7 +137,7 @@ The steps listed below for building and deploying the microservice applications 
   $ setsebool -P virt_use_nfs 1
   $ setsebool -P virt_sandbox_use_nfs 1
   ```
-5.  Create a *Persistent Volume* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the configuration directory.
+5.  Create a *Persistent Volume* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the *configuration* directory.
 
   ```
   apiVersion: v1
@@ -153,6 +206,8 @@ The steps listed below for building and deploying the microservice applications 
   $ oc get pods
   ```
   * At this point, you should have successfully built an Apache Camel based RESTful microservice using OpenShift FIS tooling and deployed the same to OpenShift PaaS!
+  
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/ose-auto-fis.png)
 10.  Open a command line window and tail the output from the application Pod.
    
    ```
@@ -178,14 +233,15 @@ The steps listed below for building and deploying the microservice applications 
 12.  Test the REST end-points using your browser. Substitute the correct values for route name, project name and 
 openshift domain name as they apply to your OpenShift environment.
   * Test *'getVehicle'* end-point. The result of the REST API call should be JSON data. Vehicle numbers/IDs 
-  which you can retrieve are vno01 ... vno05.  Substitute the exact vehicle ID you want to retrieve in the URL (below).
+  which you can retrieve are vno01 ... vno04.  Substitute the exact vehicle ID you want to retrieve in the URL below.
   ```
   http://route name-project name.openshift domain name/AutoDMS/getVehicle/001
   ```
-  * Test *'availableVehicle'* end-point.  See an example below.
+  * Test *'availableVehicle'* end-point using URL below.
   ```
   http://route name-project name.openshift domain name/AutoDMS/availableVehicle/pricerange/20000/30000
   ```
+  
 13.  You can view the REST API responses in the Pod output / command window as shown below.
 
   ```
@@ -199,11 +255,14 @@ openshift domain name as they apply to your OpenShift environment.
   "inventoryCount" : 2
 }
   ```
+  * REST API response shown in browser window below.
+  
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/results01.png)
 
-14.  Open the MongoDB application container (Pod) terminal window using the OpenShift Web UI.
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-4.png)
+14.  Open the MongoDB database container (Pod) terminal window using the OpenShift Web UI.
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/mongodb-4.png)
 15.  Log into the MongoDB client console and issue the following commands to verify the data has been persisted into the *'ose'* collection.
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/mongodb-5.png)
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/mongodb-5.png)
   You can also retrieve all the saved documents in MongoDB using the command below.
 
   ```
@@ -214,3 +273,6 @@ openshift domain name as they apply to your OpenShift environment.
   ```
   quit()
   ```
+16.  Open the FIS application container (Pod) terminal window using the OpenShift Web UI.  Then verify the contents of the mounted *secrets* directory (shown in screenshot below).
+
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/secrets01.png)
