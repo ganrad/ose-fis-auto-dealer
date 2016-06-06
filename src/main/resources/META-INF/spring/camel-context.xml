@@ -28,7 +28,7 @@
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>file:/etc/vol-secrets/db.name</value>
+				<value>classpath:mongodb.properties</value>
 				<value>file:/etc/vol-secrets/db.username</value>
 				<value>file:/etc/vol-secrets/db.password</value>
 			</list>
@@ -46,22 +46,37 @@
 		</constructor-arg>
 	</bean>
 
-  <camelContext xmlns="http://camel.apache.org/schema/spring">
+	<bean id="updListBean" class="com.redhat.fis.dms.beans.VehicleUpdateList"/>
+
+  <camelContext id="auto-dms-api" xmlns="http://camel.apache.org/schema/spring">
 	<propertyPlaceholder id="properties" location="classpath:mongodb.properties"/>
 
   <restConfiguration component="jetty" host="0.0.0.0" port="9092" />
   <rest path="/AutoDMS">
-    <get uri="/availableVehicle/pricerange/{minprice}/{maxprice}">
+    <get uri="/vehicle/pricerange/{minprice}/{maxprice}">
       <to uri="direct:availableVehicle"/>
     </get>
-    <get uri="/getVehicle/{vehicleid}">
+
+    <get uri="/vehicle/{vehicleid}">
       <to uri="direct:getVehicle"/>
     </get>
+
+    <post uri="/vehicle" consumes="application/xml, text/xml" produces="text/html">
+      <to uri="direct:storeVehicle"/>
+    </post>
+
+    <post uri="/vehicle/{vehicleid}" consumes="application/xml, text/xml" produces="text/html">
+      <to uri="direct:updateVehicle"/>
+    </post>
+
+    <delete uri="/vehicle/{vehicleid}">
+      <to uri="direct:deleteVehicle"/>
+    </delete>
   </rest>
 
   <route id="readVehicleFiles">
     <from uri="file:target/data"/>
-    <log message="Read Vehicle Data File : ${file:absolute.path}\n${body}"/>
+    <log message="FILE: ${file:absolute.path}\n${body}"/>
     <unmarshal>
       <jaxb contextPath="com.redhat.fis.dms.model"/>
     </unmarshal>
@@ -75,12 +90,12 @@
     <setBody>
 	<simple>{ $and: [ {price: { $gte: ${headers.minprice}}}, {price: { $lte: ${headers.maxprice}}} ] }</simple>
     </setBody>
-    <log message="Mongodb: Request query: ${body}"/>
+    <log message="Mongodb request query: ${body}"/>
     <to uri="mongodb:mongoBean?database={{mongodb.database}}&amp;collection={{mongodb.collection}}&amp;operation=findAll"/>
     <marshal>
       <json prettyPrint="true" library="Jackson"/>
     </marshal>
-    <log message="Mongodb: Response: ${body}"/>
+    <log message="Mongodb response: ${body}"/>
   </route>
 
   <route id="getVehicle">
@@ -88,14 +103,53 @@
     <setBody>
 	<simple>{"vehicleId":"${headers.vehicleid}"}</simple>
     </setBody>
-    <log message="Mongodb: Request query: ${body}"/>
+    <log message="Mongodb request query: ${body}"/>
     <to uri="mongodb:mongoBean?database={{mongodb.database}}&amp;collection={{mongodb.collection}}&amp;operation=findOneByQuery"/>
     <marshal>
       <json prettyPrint="true" library="Jackson"/>
     </marshal>
-    <log message="Mongodb: Response: ${body}"/>
+    <log message="Mongodb response: ${body}"/>
   </route>
   
+  <route id="storeVehicle">
+    <from uri="direct:storeVehicle"/>
+    <setBody>
+      <simple trim="true">${bodyAs(String)}</simple>
+    </setBody>
+    <log message="HTTP request body:\n${body}"/>
+    <unmarshal>
+      <jaxb contextPath="com.redhat.fis.dms.model"/>
+    </unmarshal>
+    <log message="Database:{{mongodb.database}}, Collection:{{mongodb.collection}}"/>
+    <to uri="mongodb:mongoBean?database={{mongodb.database}}&amp;collection={{mongodb.collection}}&amp;operation=insert"/>
+    <log message="Insert in mongodb collection successful!"/>
+  </route>
+
+  <route id="updateVehicle">
+    <from uri="direct:updateVehicle"/>
+    <unmarshal>
+      <jaxb contextPath="com.redhat.fis.dms.model"/>
+    </unmarshal>
+    <to uri="bean:updListBean?method=getUpdateDocList"/>
+    <log message="Body:\n${body}"/>
+    <setHeader headerName="CamelMongoDbUpsert">
+	<constant>false</constant>
+    </setHeader>
+    <log message="Database:{{mongodb.database}}, Collection:{{mongodb.collection}}"/>
+    <to uri="mongodb:mongoBean?database={{mongodb.database}}&amp;collection={{mongodb.collection}}&amp;operation=update"/>
+    <log message="Mongodb response: Record update count=${in.header.CamelMongoDbRecordsAffected}"/>
+  </route>
+
+  <route id="deleteVehicle">
+    <from uri="direct:deleteVehicle"/>
+    <setBody>
+	<simple>{"vehicleId":"${headers.vehicleid}"}</simple>
+    </setBody>
+    <log message="Mongodb delete query: ${body}"/>
+    <to uri="mongodb:mongoBean?database={{mongodb.database}}&amp;collection={{mongodb.collection}}&amp;operation=remove"/>
+    <log message="Mongodb response: Record delete count=${in.header.CamelMongoDbRecordsAffected}"/>
+  </route>
+
 </camelContext>
 
 </beans>

@@ -28,7 +28,7 @@
     },
     {
       "name": "SERVICE_NAME",
-      "value": "s2i-camel-cxf",
+      "value": "auto-inv",
       "description": "Exposed Service name"
     },
     {
