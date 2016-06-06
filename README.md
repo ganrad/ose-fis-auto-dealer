@@ -19,10 +19,10 @@ by Wei Meilin - [jboss-fis-autodealer](https://github.com/jbossdemocentral/jboss
 The auto-dealer microservice application is implemented using Apache Camel routes (integration flows).  At a high level, the Camel routes execute the following sequence of steps (see description and diagram below) :
 
 1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share/directory.
-2.  Un-marshall/De-serialize the XML data read from files into JSON strings.
-3.  Store the vehicle info (JSON data) within collections in MongoDB NoSQL persistent database.  
+2.  Un-marshall/De-serialize the XML data read from XML files in the file system (or received via REST end-points) into JSON strings.
+3.  Store the vehicle info. (JSON data) within collections in MongoDB NoSQL persistent database.  
   **Note:** This example uses a OpenShift provided MongoDB *Instant App* template to demonstrate how to save/retrieve application data in a *'ephemeral'* ('non-persistent') database instance.  For real-world (production) applications, you will need to use the provided *'persistent'* MongoDB *Instant App* template.  While configuring this template, you will need to provide *Persistent Volume Claim* details so that the database is backed by a persistent storage volume. 
-4.  Expose two REST (HTTP) end-points to allow users to query and retrieve (GET) vehicle information from the backend persistent data store (MongoDB).
+4.  Expose multiple REST (HTTP) end-points to allow users to query/retrieve, store, update & delete vehicle information to/from the backend persistent data store (MongoDB). Refer to the URL Mappings listed in the picture below for info. on target HTTP URL's.
 
 ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/ose-fis.001.png)
 
@@ -55,7 +55,7 @@ The steps listed below for building and deploying the microservice applications 
   $ oc new-project fis-apps
   ```
 
-3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Specify values for MongoDB user name, password & database name as shown in the screenshot below.  Please note down these values as we will need them while creating *'secrets'* discussed in Step B below.  You can choose any value for the MongDB admin password.  Finally click on 'create' application.  See screenshots below.
+3.  Add a new application and name it 'mongodb'.  In the next screen, type 'mongodb' in the search text field and select the 'mongodb-ephemeral' database template.  Click next.  Specify values for MongoDB user name & password as shown in the screenshot below.  Note down these values as we will need them while creating *'secrets'* discussed in Step B below.  You can choose any value for the MongDB admin password.  Finally click on 'create' application.  See screenshots below.
 
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/mongodb-1.png)  
   
@@ -68,9 +68,9 @@ The steps listed below for building and deploying the microservice applications 
 ### B] Create a *Secret* and update *Service Account* in OpenShift
 A *secret* is used to hold sensitive information such as OAuth tokens, passwords and SSH keys in OpenShift.  Putting confidential and sensitive information such as database user names and passwords in a **secret** is much more safer and secure than storing them as plain text values directly in a application configuration file or in a Pod definition.  Using *secret* objects in OpenShift allows for more control over how confidential info. is stored and accessed and reduces the risk of accidental exposure.
 
-We will be encrypting and storing the MongoDB user name, password and database name in a *secret* using the steps outlined below.
+We will be encrypting and storing the MongoDB user name and password in a *secret* using the steps outlined below.
 
-1.  Use the *curl* command to download & save the *secrets.yaml* file from the *configuration* directory.  If you specified the same values for MongoDB user name, password and database name as depicted in the picture in Step A:3 above, then you can skip Step 2 below.
+1.  Use the *curl* command to download & save the *secrets.yaml* file from the *configuration* directory.  If you specified the same values for MongoDB user name & password as depicted in the picture in Step A:3 above, then you can skip Step 2 below.
 
 2.  Generate the Base64 encoded value for the MongoDB *user name* using the command below.
   
@@ -82,7 +82,7 @@ We will be encrypting and storing the MongoDB user name, password and database n
   ```
   db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
   ```
-  * Repeat this command to generate Base64 encoded values for *mongodb.password* and *mongodb.database* & then save them in the *'secrets.yaml'* file.  Your *secrets.yaml* file should look like the definition below.  Encrypted values for the  secret data may differ based on the values your provided.
+  * Repeat this command to generate Base64 encoded values for *mongodb.password* & then save them in the *'secrets.yaml'* file.  Your *secrets.yaml* file should look like the definition below.  Encrypted values for the  secret data may differ based on the values your provided.
   
   ```
   apiVersion: v1
@@ -91,10 +91,10 @@ We will be encrypting and storing the MongoDB user name, password and database n
     name: fis-auto-db-secret
   type: Opaque
   data:
-    db.name: bW9uZ29kYi5kYXRhYmFzZT10ZXN0Cg==
     db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
     db.password: bW9uZ29kYi5wYXNzd29yZD1vcGVuc2hpZnQK
   ```
+  * The MongoDB database name & collection name is not stored in the secrets file.  These values are stored in the 'mongodb.properties' file under directory 'src/main/resources'.  In case you didn't use the values shown in picture in Step A:3 then you will need to update this file with the correct values.
 
 3. Use the command below to create the *secret* object.
 
@@ -230,16 +230,24 @@ We will be encrypting and storing the MongoDB user name, password and database n
 	      <inventoryCount>2</inventoryCount>
    </vehicle>
    ```
-12.  Test the REST end-points using your browser. Substitute the correct values for route name, project name and 
-openshift domain name as they apply to your OpenShift environment.
-  * Test *'getVehicle'* end-point. The result of the REST API call should be JSON data. Vehicle numbers/IDs 
-  which you can retrieve are vno01 ... vno04.  Substitute the exact vehicle ID you want to retrieve in the URL below.
+12.  Test the REST end-points using your browser.  Substitute the correct values for route name, project name and 
+openshift domain name as they apply to your OpenShift environment.  You will also have to substitute values for URL parameters when issuing the corresponding GET/POST/DELETE HTTP calls.  The result of all REST API calls is JSON data.
+  * Retrieve vehicle info. by ID or by price range (HTTP GET) : 
+  
   ```
-  http://route name-project name.openshift domain name/AutoDMS/getVehicle/001
+  http://route name-project name.openshift domain name/AutoDMS/vehicle/{vehicleid}
+  http://route name-project name.openshift domain name/AutoDMS/vehicle/pricerange/{minprice}/{maxprice}
   ```
-  * Test *'availableVehicle'* end-point using URL below.
+  * Store (Create or Update) vehicle info. (HTTP POST) :
+  
   ```
-  http://route name-project name.openshift domain name/AutoDMS/availableVehicle/pricerange/20000/30000
+  http://route name-project name.openshift domain name/AutoDMS/vehicle
+  http://route name-project name.openshift domain name/AutoDMS/vehicle/{vehicleid}
+  ```
+  * Delete vehicle info. (HTTP DELETE) :
+  
+  ```
+  http://route name-project name.openshift domain name/AutoDMS/vehicle/{vehicleid}
   ```
   
 13.  You can view the REST API responses in the Pod output / command window as shown below.
