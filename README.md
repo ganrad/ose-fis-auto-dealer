@@ -22,7 +22,7 @@ The auto-dealer microservice application is implemented using Apache Camel route
 2.  Un-marshall/De-serialize the XML data read from XML files in the file system (or received via REST end-points) into JSON strings.
 3.  Store the vehicle info. (JSON data) within collections in MongoDB NoSQL persistent database.  
   **Note:** This example uses a OpenShift provided MongoDB *Instant App* template to demonstrate how to save/retrieve application data in a *'ephemeral'* ('non-persistent') database instance.  For real-world (production) applications, you will need to use the provided *'persistent'* MongoDB *Instant App* template.  While configuring this template, you will need to provide *Persistent Volume Claim* details so that the database is backed by a persistent storage volume. 
-4.  Expose multiple REST (HTTP) end-points to allow users to query/retrieve, store, update & delete vehicle information to/from the backend persistent data store (MongoDB). Refer to the URL Mappings listed in the picture below for info. on target HTTP URL's.
+4.  Expose multiple REST (Http) end-points to allow users to query/retrieve, store, update & delete vehicle information to/from the backend persistent data store (MongoDB). Refer to the URL Mappings listed in the picture below for info. on target Http URL's.
 
 ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/ose-fis.001.png)
 
@@ -30,7 +30,7 @@ In order to retrieve vehicle information from a persistent store such as a file 
 
 OpenShift comes with a wide variety of persistant storage plug-ins that allow containerized applications to retrieve/store data from multiple persistent storage systems.  The persistent storage plug-ins that ship with OpenShift can be viewed [here](https://docs.openshift.com/enterprise/3.1/install_config/persistent_storage/index.html).
 
-Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.  For this reason, we will be persisting the vehicle data read from the file system (NFS directory) into a persistent NoSQL database (MongoDB).  All REST API (HTTP) requests will be translated into queries by FIS routes and data will be fetched from the underlying MongoDB persistent database.
+Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.  For this reason, we will be persisting the vehicle data read from the file system (NFS directory) into a persistent NoSQL database (MongoDB).  All REST API (Http) requests will be translated into queries by FIS routes and data will be fetched from the underlying MongoDB persistent database.
 
 ## Steps for deploying MongoDB container and FIS microservices on OpenShift Enterprise v3.1/v3.2
 The steps listed below for building and deploying the microservice applications follows approach (1) described above, the S2I workflow.
@@ -82,7 +82,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
   ```
   db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
   ```
-  * Repeat this command to generate Base64 encoded values for *mongodb.password* & then save them in the *'secrets.yaml'* file.  Your *secrets.yaml* file should look like the definition below.  Encrypted values for the  secret data may differ based on the values your provided.
+  * Repeat the command (above) to generate Base64 encoded value for *mongodb.password* & then save it in the *'secrets.yaml'* file.  Your *secrets.yaml* file should look like the definition below.  Encrypted values for the  secret data may differ based on the values your provided.
   
   ```
   apiVersion: v1
@@ -94,7 +94,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
     db.username: bW9uZ29kYi51c2VyPW9zZVVzZXIK
     db.password: bW9uZ29kYi5wYXNzd29yZD1vcGVuc2hpZnQK
   ```
-  * The MongoDB database name & collection name is not stored in the secrets file.  These values are stored in the 'mongodb.properties' file under directory 'src/main/resources'.  In case you didn't use the values shown in picture in Step A:3 then you will need to update this file with the correct values.
+  * The MongoDB database name & collection name is not stored in the secrets file.  These values are stored in the *'mongodb.properties'* file under directory *'src/main/resources'*.  In case you didn't use the values shown in picture in Step A:3 then you will need to update this file with the correct values.
 
 3. Use the command below to create the *secret* object.
 
@@ -215,7 +215,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
    $ oc log pod -f <pod name>
    ```
    Substitute the name of your Pod in the command above.
-11.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *data* directory.  The XML files should be immediately read by this microservice, the data should be converted to JSON format & persisted to the collection *'ose'* within MongoDB database *'test'*.  You should also be able to view corresponding log messages in the command window as shown below.
+11.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *'data'* directory of this project.  The XML files should be immediately read by this microservice, the data should be converted to JSON format & persisted to the collection *'ose'* within MongoDB database *'test'*.  You should also be able to view corresponding log messages in the command window as shown below.
 
    ```
    2016-05-17 22:52:08,531 [e://target/data] INFO  readVehicleFiles               - Read Vehicle Data File : /deployments/target/data/vn01.xml
@@ -230,21 +230,21 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
 	      <inventoryCount>2</inventoryCount>
    </vehicle>
    ```
-12.  Test the REST end-points using your browser.  Substitute the correct values for route name, project name and 
-openshift domain name as they apply to your OpenShift environment.  You will also have to substitute values for URL parameters when issuing the corresponding GET/POST/DELETE HTTP calls.  The result of all REST API calls is JSON data.
-  * Retrieve vehicle info. by ID or by price range (HTTP GET) : 
+12.  Test the Http REST end-points using your browser.  Substitute the correct values for route name, project name and 
+openshift domain name as they apply to your OpenShift environment.  You will also have to substitute values for URL parameters (excluding { } in URL's below) when issuing the corresponding GET/POST/DELETE Http calls.  All Http REST API calls return data in JSON format.
+  * Retrieve vehicle info. by ID or by price range (Http GET) : 
   
   ```
   http://route name-project name.openshift domain name/AutoDMS/vehicle/{vehicleid}
   http://route name-project name.openshift domain name/AutoDMS/vehicle/pricerange/{minprice}/{maxprice}
   ```
-  * Store (Create or Update) vehicle info. (HTTP POST) :
+  * Store (Create or Update) vehicle info. (Http POST) :
   
   ```
   http://route name-project name.openshift domain name/AutoDMS/vehicle
   http://route name-project name.openshift domain name/AutoDMS/vehicle/{vehicleid}
   ```
-  * Delete vehicle info. (HTTP DELETE) :
+  * Delete vehicle info. (Http DELETE) :
   
   ```
   http://route name-project name.openshift domain name/AutoDMS/vehicle/{vehicleid}
@@ -281,6 +281,7 @@ openshift domain name as they apply to your OpenShift environment.  You will als
   ```
   quit()
   ```
-16.  Open the FIS application container (Pod) terminal window using the OpenShift Web UI.  Then verify the contents of the mounted *secrets* directory (shown in screenshot below).
-
+16.  Open the FIS application container (Pod) terminal window using the OpenShift Web UI.  Then verify the contents of the mounted *secrets* directory (shown in screenshot below).  
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/secrets01.png)
+
+17.  Congratulations!  You have just built, deployed and tested an Apache Camel application on OpenShift Enterprise.  It's that simple!  Next, proceed to the GitHub project [ose-fis-jms-tx] (https://github.com/ganrad/ose-fis-jms-tx) to build, deploy and test a *transactional* Apache Camel application.
