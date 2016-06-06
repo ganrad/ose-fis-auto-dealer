@@ -284,4 +284,4 @@ openshift domain name as they apply to your OpenShift environment.  You will als
 16.  Open the FIS application container (Pod) terminal window using the OpenShift Web UI.  Then verify the contents of the mounted *secrets* directory (shown in screenshot below).  
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/secrets01.png)
 
-17.  Congratulations!  You have just built, deployed and tested an Apache Camel application on OpenShift Enterprise.  It's that simple!  Next, proceed to the GitHub project [ose-fis-jms-tx] (https://github.com/ganrad/ose-fis-jms-tx) to build, deploy and test a *transactional* Apache Camel application.
+17.  Congratulations!  You have just built, deployed and tested an Apache Camel application on OpenShift Enterprise.  It's that simple!  Next, if you want to learn how to build & deploy *transactional' Camel applications and run them on OpenShift, then proceed to the GitHub project [ose-fis-jms-tx] (https://github.com/ganrad/ose-fis-jms-tx).
