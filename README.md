@@ -137,7 +137,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
   $ setsebool -P virt_use_nfs 1
   $ setsebool -P virt_sandbox_use_nfs 1
   ```
-5.  Create a *Persistent Volume* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the *configuration* directory.
+5.  Create a *Persistent Volume* definition and save it in a file *pv.yaml* (as below).  Alternatively, use the *curl* command to download the *pv.yaml* file from the *configuration* directory.
 
   ```
   apiVersion: v1
@@ -157,8 +157,13 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
   
   **path** : Directory (full path) exported by the NFS server.  
   **server** : Hostname (or IP address) of the NFS server.
-
-6.  Create a *Persistent Volume Claim* definition and save it in a file (as below).  Alternatively, use the *curl* command to download the *pvc.yaml* file from the *configuration* directory.
+  
+  * Then create the *Persistent Volume* definition in your project using the command below.
+  
+  ```
+  oc create -f pv.yaml
+  ```
+6.  Create a *Persistent Volume Claim* definition and save it in a file *pvc.yaml* (as below).  Alternatively, use the *curl* command to download the *pvc.yaml* file from the *configuration* directory.
 
    ```
    apiVersion: v1
@@ -172,6 +177,12 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
        requests:
          storage: 225Mi
    ```
+   
+   * Then create the *Persistent Volume Claim* definition in your project using the command below.
+   
+  ```
+  oc create -f pvc.yaml
+  ```
 7.  Check if the PVC has been associated with the PV.
 
    ```
