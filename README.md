@@ -161,7 +161,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
   * Then create the *Persistent Volume* definition in your project using the command below.
   
   ```
-  oc create -f pv.yaml
+  $ oc create -f pv.yaml
   ```
 6.  Create a *Persistent Volume Claim* definition and save it in a file *pvc.yaml* (as below).  Alternatively, use the *curl* command to download the *pvc.yaml* file from the *configuration* directory.
 
@@ -181,7 +181,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
    * Then create the *Persistent Volume Claim* definition in your project using the command below.
    
   ```
-  oc create -f pvc.yaml
+  $ oc create -f pvc.yaml
   ```
 7.  Check if the PVC has been associated with the PV.
 
