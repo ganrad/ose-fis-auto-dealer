@@ -239,7 +239,10 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
    $ oc log pod -f <pod name>
    ```
    Substitute the name of your Pod in the command above.
-11.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *'data'* directory of this project.  The XML files should be immediately read by this microservice, the data should be converted to JSON format & persisted to the collection *'ose'* within MongoDB database *'test'*.  You should also be able to view corresponding log messages in the command window as shown below.
+
+### [D] Test *ose-fis-auto-dealer* microservice
+
+1.  Create and save a few XML data files into the corresponding source directory (exported directory) on the NFS server.  Sample XML data files are provided in the *'data'* directory of this project.  The XML files should be immediately read by this microservice, the data should be converted to JSON format & persisted to the collection *'ose'* within MongoDB database *'test'*.  You should also be able to view corresponding log messages in the command window as shown below.
 
    ```
    2016-05-17 22:52:08,531 [e://target/data] INFO  readVehicleFiles               - Read Vehicle Data File : /deployments/target/data/vn01.xml
@@ -254,7 +257,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
 	      <inventoryCount>2</inventoryCount>
    </vehicle>
    ```
-12.  Test the Http REST end-points using your browser.  Substitute the correct values for route name, project name and 
+2.  Test the Http REST end-points using your browser.  Substitute the correct values for route name, project name and 
 openshift domain name as they apply to your OpenShift environment.  You will also have to substitute values for URL parameters (excluding { } in URL's below) when issuing the corresponding GET/POST/DELETE Http calls.  All Http REST API calls return data in JSON format.
   * Retrieve vehicle info. by ID or by price range (Http GET) : 
   
@@ -274,7 +277,7 @@ openshift domain name as they apply to your OpenShift environment.  You will als
   http://route name-project name.openshift domain name/AutoDMS/vehicle/{vehicleid}
   ```
   
-13.  You can view the REST API responses in the Pod output / command window as shown below.
+3.  You can view the REST API responses in the Pod output / command window as shown below.
 
   ```
   2016-05-17 22:53:24,788 [tp1244815033-20] INFO  getVehicle                     - {
@@ -291,9 +294,9 @@ openshift domain name as they apply to your OpenShift environment.  You will als
   
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/results01.png)
 
-14.  Open the MongoDB database container (Pod) terminal window using the OpenShift Web UI.
+4.  Open the MongoDB database container (Pod) terminal window using the OpenShift Web UI.
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/mongodb-4.png)
-15.  Log into the MongoDB client console and issue the following commands to verify the data has been persisted into the *'ose'* collection.
+5.  Log into the MongoDB client console and issue the following commands to verify the data has been persisted into the *'ose'* collection.
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/mongodb-5.png)
   You can also retrieve all the saved documents in MongoDB using the command below.
 
@@ -305,7 +308,7 @@ openshift domain name as they apply to your OpenShift environment.  You will als
   ```
   quit()
   ```
-16.  Open the FIS application container (Pod) terminal window using the OpenShift Web UI.  Then verify the contents of the mounted *secrets* directory (shown in screenshot below).  
+6.  Open the FIS application container (Pod) terminal window using the OpenShift Web UI.  Then verify the contents of the mounted *secrets* directory (shown in screenshot below).  
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/secrets01.png)
 
-17.  Congratulations!  You have just built, deployed and tested an Apache Camel application on OpenShift Enterprise.  It's that simple!  Next, if you want to learn how to build & deploy **transactional** Camel applications and run them on OpenShift, then proceed to the GitHub project [ose-fis-jms-tx] (https://github.com/ganrad/ose-fis-jms-tx).
+Congratulations!  You have just built, deployed and tested an Apache Camel application on OpenShift Enterprise.  It's that simple!  Next, if you want to learn how to build & deploy **transactional** Camel applications and run them on OpenShift, then proceed to the GitHub project [ose-fis-jms-tx] (https://github.com/ganrad/ose-fis-jms-tx).
