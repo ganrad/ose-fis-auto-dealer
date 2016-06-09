@@ -18,7 +18,20 @@ by Wei Meilin - [jboss-fis-autodealer](https://github.com/jbossdemocentral/jboss
 
 The auto-dealer microservice application is implemented using Apache Camel routes (integration flows).  At a high level, the Camel routes execute the following sequence of steps (see description and diagram below) :
 
-1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share/directory.
+1.  Retrieve vehicle data (*'xxx.xml'*) files from a source directory.  This directory will be mounted on a NFS share/directory.  The structure of the Vehicle XML message is shown below.
+
+  ```
+  <?xml version="1.0"?>
+  <vehicle>
+    <vehicleId>001</vehicleId>
+    <make>Honda</make>
+    <model>Civic</model>
+    <type>LX</type>
+    <year>2016</year>
+    <price>18999</price>
+    <inventoryCount>2</inventoryCount>
+  </vehicle>
+  ```
 2.  Un-marshall/De-serialize the XML data read from XML files in the file system (or received via REST end-points) into JSON strings.
 3.  Store the vehicle info. (JSON data) within collections in MongoDB NoSQL persistent database.  
   **Note:** This example uses a OpenShift provided MongoDB *Instant App* template to demonstrate how to save/retrieve application data in a *'ephemeral'* ('non-persistent') database instance.  For real-world (production) applications, you will need to use the provided *'persistent'* MongoDB *Instant App* template.  While configuring this template, you will need to provide *Persistent Volume Claim* details so that the database is backed by a persistent storage volume. 
