@@ -257,7 +257,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
 	      <inventoryCount>2</inventoryCount>
    </vehicle>
    ```
-2.  Test the Http REST end-points using your browser.  Substitute the correct values for route name, project name and 
+2.  Test the Http REST end-points using your browser.  Substitute the correct values for route name, project name (fis-apps) and 
 openshift domain name as they apply to your OpenShift environment.  You will also have to substitute values for URL parameters (excluding { } in URL's below) when issuing the corresponding GET/POST/DELETE Http calls.  All Http REST API calls return data in JSON format.
   * Retrieve vehicle info. by ID or by price range (Http GET) : 
   
