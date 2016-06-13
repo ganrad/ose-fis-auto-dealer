@@ -231,7 +231,7 @@ We will be encrypting and storing the MongoDB user name and password in a *secre
   ```
   * At this point, you should have successfully built an Apache Camel based RESTful microservice using OpenShift FIS tooling and deployed the same to OpenShift PaaS!
   
-  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/ose-auto-fis.png)
+  ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/app-inv-pods.png)
 10.  Open a command line window and tail the output from the application Pod.
    
    ```
