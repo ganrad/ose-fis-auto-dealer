@@ -1,8 +1,8 @@
 # OpenShift FIS microservice *ose-fis-auto-dealer*
 
-**Important Note:** This project assumes the readers have a basic working knowledge of *Red Hat OpenShift Container Platform / Enterprise (v3.1 or above)* & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation.  For quick reference, links to a couple of useful on-line resources are listed below.
+**Important Note:** This project assumes the readers have a basic working knowledge of *Red Hat OpenShift Container Platform / Enterprise* (v3.1 or above) & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation.  For quick reference, links to a couple of useful on-line resources are listed below.
 
-1.  [OpenShift Enterprise Documentation](https://docs.openshift.com/)
+1.  [OpenShift CP/Enterprise Documentation](https://docs.openshift.com/)
 2.  [Kubernetes Documentation](http://kubernetes.io/docs/user-guide/pods/)
 
 This project uses OpenShift FIS (Fuse Integration Services) tools and explains how to develop, build and deploy Apache Camel based microservices in OpenShift PaaS.
@@ -43,9 +43,9 @@ In order to retrieve vehicle information from a persistent store such as a file 
 
 OpenShift comes with a wide variety of persistant storage plug-ins that allow containerized applications to retrieve/store data from multiple persistent storage systems.  The persistent storage plug-ins that ship with OpenShift can be viewed [here](https://docs.openshift.com/enterprise/3.1/install_config/persistent_storage/index.html).
 
-Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift Enterprise.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.  For this reason, we will be persisting the vehicle data read from the file system (NFS directory) into a persistent NoSQL database (MongoDB).  All REST API (Http) requests will be translated into queries by FIS routes and data will be fetched from the underlying MongoDB persistent database.
+Microservices are stateless and are ideal candidates for deploying onto a container application platform such as Red Hat OpenShift.  Container images are essentially immutable and so data stored inside a running container is only available as long as the container is alive.  Once the container terminates (or is deleted/evicted), it's data is no longer available.  For this reason, we will be persisting the vehicle data read from the file system (NFS directory) into a persistent NoSQL database (MongoDB).  All REST API (Http) requests will be translated into queries by FIS routes and data will be fetched from the underlying MongoDB persistent database.
 
-## Steps for deploying MongoDB container and FIS microservices on OpenShift Enterprise v3.1/v3.2
+## Steps for deploying MongoDB container and FIS microservices on OpenShift Container Platform
 The steps listed below for building and deploying the microservice applications follows approach (1) described above, the S2I workflow.
 
 ### A] Deploy MongoDB NoSQL Database  
@@ -311,4 +311,4 @@ openshift domain name as they apply to your OpenShift environment.  You will als
 6.  Open the FIS application container (Pod) terminal window using the OpenShift Web UI.  Then verify the contents of the mounted *secrets* directory (shown in screenshot below).  
   ![alt tag](https://raw.githubusercontent.com/ganrad/ose-fis-auto-dealer/master/images/secrets01.png)
 
-Congratulations!  You have just built, deployed and tested an Apache Camel application on OpenShift Enterprise.  It's that simple!  Next, if you want to learn how to build & deploy **transactional** Camel applications and run them on OpenShift, then proceed to the GitHub project [ose-fis-jms-tx] (https://github.com/ganrad/ose-fis-jms-tx).
+Congratulations!  You have just built, deployed and tested an Apache Camel application on Red Hat OpenShift Container Platform.  It's that simple!  Next, if you want to learn how to build & deploy **transactional** Camel applications and run them on OpenShift, then proceed to the GitHub project [ose-fis-jms-tx] (https://github.com/ganrad/ose-fis-jms-tx).
