@@ -1,11 +1,11 @@
 # OpenShift FIS microservice *ose-fis-auto-dealer*
 
-**Important Note:** This project assumes the readers have a basic working knowledge of *Red Hat OpenShift Enterprise v3.1/v3.2* (or upstream project -> OpenShift Origin) & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation.  For quick reference, links to a couple of useful on-line resources are listed below.
+**Important Note:** This project assumes the readers have a basic working knowledge of *Red Hat OpenShift Container Platform / Enterprise (v3.1 or above)* & are familiar with the underlying framework components such as Docker & Kubernetes.  Readers are also advised to familiarize themselves with the *Kubernetes* API object model (high level) before beginning to work on this *microservice* implementation.  For quick reference, links to a couple of useful on-line resources are listed below.
 
 1.  [OpenShift Enterprise Documentation](https://docs.openshift.com/)
 2.  [Kubernetes Documentation](http://kubernetes.io/docs/user-guide/pods/)
 
-This project uses OpenShift FIS (Fuse Integration Services) tools and explains how to develop, build and deploy Apache Camel based microservices in OpenShift Enterprise v3.1/v3.2.  This project can also be deployed to OpenShift Container Platform v3.3 (or a later release).
+This project uses OpenShift FIS (Fuse Integration Services) tools and explains how to develop, build and deploy Apache Camel based microservices in OpenShift PaaS.
 
 For building Apache Camel applications within Docker containers and then deploying the resulting container images onto OpenShift, developers can take two different approaches or paths.  The steps outlined here use approach # 1 (see below) in order to build and deploy this microservice application.
 
